@@ -1,0 +1,6 @@
+{
+	"TmpDir":				"pbsrtmp",
+	"MysqlDb":			"mystock",
+	"MysqlUser":		"root",
+	"MysqlPass":		"123456"
+}
