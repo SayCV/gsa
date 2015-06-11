@@ -8,6 +8,9 @@ import (
 	`github.com/SayCV/gsa/term`
 	`github.com/michaeldv/termbox-go`
 	`time`
+	`flag`
+	"github.com/golang/glog"
+	"os"
 )
 
 const help = `gsa v0.1.0 -- Copyright (c) 2015 by QDevor. All Rights Reserved.
@@ -31,7 +34,7 @@ Enter comma-delimited list of stock tickers when prompted.
 //-----------------------------------------------------------------------------
 func mainLoop(screen *term.Screen, profile *term.Profile) {
 	var lineEditor *term.LineEditor
-	var columnEditor *term.ColumnEditor
+	var columnEditor *term.ColumnEditor  
 
 	keyboardQueue := make(chan termbox.Event)
 	timestampQueue := time.NewTicker(1 * time.Second)
@@ -116,9 +119,19 @@ loop:
 
 //-----------------------------------------------------------------------------
 func main() {
+  flag.Parse()
+	p, err := os.Getwd()  
+  if err != nil {  
+    glog.Info("Getwd: ", err)  
+  } else {  
+    glog.Info("Getwd: ", p)  
+  }
+
 	screen := term.NewScreen()
 	defer screen.Close()
 
 	profile := term.NewProfile()
 	mainLoop(screen, profile)
+	
+	glog.Flush()
 }

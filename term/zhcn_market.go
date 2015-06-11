@@ -11,33 +11,43 @@ import (
 	`net/http`
 	`regexp`
 	`strings`
+	//`github.com/SayCV/gsa/log`
+	`github.com/golang/glog`
 )
 
-const zhcnMarketURL = `http://money.cnn.com/data/markets/`
+const zhcnMarketURL = `http://qt.gtimg.cn/q=%s`
+
+var zhcnMarketCodes = map[string]string{
+  `ShangHai`         : `sh000001`,
+  `ShenZhen`         : `sz399001`,
+  `GrowthEnterprise` : `sh000300`,
+  `ShangHaiFund`     : `sz399006`,
+  `ShenZhenFund`     : `sh000011`,
+}
 
 // Market stores current market information displayed in the top three lines of
 // the screen. The market data is fetched and parsed from the HTML page above.
 type zhcnMarket struct {
 	IsClosed  bool              // True when China stcok markets are closed.
 	
-	shIndex		map[string]string // Hash of S SECI Jones indicators.
-	szIndex		map[string]string // Hash of SZ SECI indicators.
-	geIndex		map[string]string // Hash of GEI indicators.
+	ShangHai		map[string]string // Hash of S SECI Jones indicators.
+	ShenZhen		map[string]string // Hash of SZ SECI indicators.
+	GrowthEnterprise		map[string]string // Hash of GEI indicators.
 	
-	shFIndex	map[string]string
-	szFIndex  map[string]string
+	ShangHaiFund	map[string]string
+	ShenZhenFund  map[string]string
 	
 	Dow       map[string]string // Hash of Dow Jones indicators.
 	Nasdaq    map[string]string // Hash of NASDAQ indicators.
 	Sp500     map[string]string // Hash of S&P 500 indicators.
 	HongKong  map[string]string // Hash of HKHSI indicators.
-	
+  
 	regex     *regexp.Regexp // Regex to parse market data from HTML.
 	errors    string         // Error(s), if any.
 }
 
 // Returns new initialized Market struct.
-func zhcnNewMarket() *zhcnMarket {
+func NewMarket() *zhcnMarket {
 	market := &zhcnMarket{}
 	market.IsClosed = false
 	
@@ -71,10 +81,21 @@ func zhcnNewMarket() *zhcnMarket {
 		`">S&P<`, any, percent, any, price, any, percent, any,
 		`>Hang Seng<`, any, percent, any, price, any, percent, any,
 	}
-
+  
 	market.regex = regexp.MustCompile(strings.Join(rules, ``))
 
 	return market
+}
+
+func (market *zhcnMarket) getUrl() (string) {
+  codes := fmt.Sprintf(`%s,%s`,
+    zhcnMarketCodes[`ShangHai`],
+    zhcnMarketCodes[`ShenZhen`])
+  url := fmt.Sprintf(zhcnMarketURL, codes)
+  
+  glog.Info(url)
+
+  return url
 }
 
 // Fetch downloads HTML page from the 'zhcnMarketURL', parses it, and stores resulting data
@@ -86,8 +107,8 @@ func (market *zhcnMarket) Fetch() (self *zhcnMarket) {
 			market.errors = fmt.Sprintf("Error fetching market data...\n%s", err)
 		}
 	}()
-
-	response, err := http.Get(zhcnMarketURL)
+  _zhcnMarketURL := market.getUrl()
+	response, err := http.Get(_zhcnMarketURL)
 	if err != nil {
 		panic(err)
 	}
@@ -97,14 +118,15 @@ func (market *zhcnMarket) Fetch() (self *zhcnMarket) {
 	if err != nil {
 		panic(err)
 	}
-
+  
+  glog.Info("Get body: ", body)
 	body = market.isMarketOpen(body)
 	return market.extract(market.trim(body))
 }
 
 // Ok returns two values: 1) boolean indicating whether the error has occured,
 // and 2) the error text itself.
-func (market *Market) Ok() (bool, string) {
+func (market *zhcnMarket) Ok() (bool, string) {
 	return market.errors == ``, market.errors
 }
 
@@ -129,7 +151,7 @@ func (market *zhcnMarket) extract(snippet []byte) *zhcnMarket {
 	matches := market.regex.FindStringSubmatch(string(snippet))
 
 	if len(matches) < 31 {
-		panic(`Unable to parse ` + marketURL)
+		panic(`Unable to parse ` + zhcnMarketURL)
 	}
 
 	market.ShangHai[`change`] = matches[1]
@@ -151,22 +173,6 @@ func (market *zhcnMarket) extract(snippet []byte) *zhcnMarket {
 	market.ShenZhenFund[`change`] = matches[7]
 	market.ShenZhenFund[`latest`] = matches[8]
 	market.ShenZhenFund[`percent`] = matches[9]
-	
-	market.Dow[`change`] = matches[1]
-	market.Dow[`latest`] = matches[2]
-	market.Dow[`percent`] = matches[3]
-
-	market.Nasdaq[`change`] = matches[4]
-	market.Nasdaq[`latest`] = matches[5]
-	market.Nasdaq[`percent`] = matches[6]
-
-	market.Sp500[`change`] = matches[7]
-	market.Sp500[`latest`] = matches[8]
-	market.Sp500[`percent`] = matches[9]
-
-	market.HongKong[`change`] = matches[13]
-	market.HongKong[`latest`] = matches[14]
-	market.HongKong[`percent`] = matches[15]
 
 	return market
 }

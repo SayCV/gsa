@@ -62,14 +62,16 @@ func NewLayout() *Layout {
 
 // Market merges given market data structure with the market template and
 // returns formatted string that includes highlighting markup.
-func (layout *Layout) Market(market *Market) string {
+func (layout *Layout) Market(market *zhcnMarket) string {
 	if ok, err := market.Ok(); !ok { // If there was an error fetching market data...
 		return err // then simply return the error string.
 	}
 
-	highlight(market.Dow, market.Sp500, market.Nasdaq,
-		market.Tokyo, market.HongKong, market.London, market.Frankfurt,
-		market.Yield, market.Oil, market.Euro, market.Gold)
+	highlight(
+	  market.ShangHai, market.ShenZhen, market.GrowthEnterprise,
+	  market.ShangHaiFund, market.ShenZhenFund,
+	  market.Dow, market.Sp500, market.Nasdaq, market.HongKong)
+	
 	buffer := new(bytes.Buffer)
 	layout.marketTemplate.Execute(buffer, market)
 

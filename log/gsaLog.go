@@ -4,25 +4,26 @@
 package log
 
 import (
-	"log"
+  //"github.com/golang/glog"
+	stdLog "log"
 	"os"
 )
 
-var printLogger *log.Logger
-var errorLogger *log.Logger
+var printLogger *stdLog.Logger
+var errorLogger *stdLog.Logger
 
-func getErrorLogger() *log.Logger {
+func getErrorLogger() *stdLog.Logger {
 	if errorLogger == nil {
 		// TODO allow configuring an error file here?
-		errorLogger = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.Lshortfile) 
+		errorLogger = stdLog.New(os.Stderr, "", stdLog.Ldate|stdLog.Ltime|stdLog.Lshortfile) 
 	}
 
 	return errorLogger
 }
 
-func getPrintLogger() *log.Logger {
+func getPrintLogger() *stdLog.Logger {
 	if printLogger == nil {
-		printLogger = log.New(os.Stdout, "", log.Ldate|log.Ltime)
+		printLogger = stdLog.New(os.Stdout, "", stdLog.Ldate|stdLog.Ltime)
 	}
 
 	return printLogger

@@ -92,8 +92,8 @@ func (screen *Screen) Draw(objects ...interface{}) *Screen {
 	}
 	for _, ptr := range objects {
 		switch ptr.(type) {
-		case *Market:
-			object := ptr.(*Market)
+		case *zhcnMarket:
+			object := ptr.(*zhcnMarket)
 			screen.draw(screen.layout.Market(object.Fetch()))
 		case *Quotes:
 			object := ptr.(*Quotes)
