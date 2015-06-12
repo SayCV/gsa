@@ -11,7 +11,7 @@ import (
 	`net/http`
 	`reflect`
 	`strings`
-	`github.com/SayCV/gsa/term`
+	//`github.com/SayCV/gsa/term`
 )
 
 // See http://www.gummy-stuff.org/Yahoo-stocks.htm

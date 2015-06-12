@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license that can
 // be found in the LICENSE file.
 
-package term
+package portfolio
 
 import (
 	`bytes`
@@ -13,7 +13,7 @@ import (
 	`strings`
 	//`encoding/json`
 	`github.com/SayCV/gsa/log`
-	`github.com/SayCV/gsa/portfolio`
+	//`github.com/SayCV/gsa/portfolio`
 )
 
 const zhcnMarketURL = `http://qt.gtimg.cn/q=%s`
