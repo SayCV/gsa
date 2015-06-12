@@ -11,8 +11,9 @@ import (
 	`net/http`
 	`regexp`
 	`strings`
-	//`github.com/SayCV/gsa/log`
-	`github.com/golang/glog`
+	//`encoding/json`
+	`github.com/SayCV/gsa/log`
+	`github.com/SayCV/gsa/portfolio`
 )
 
 const zhcnMarketURL = `http://qt.gtimg.cn/q=%s`
@@ -41,6 +42,8 @@ type zhcnMarket struct {
 	Nasdaq    map[string]string // Hash of NASDAQ indicators.
 	Sp500     map[string]string // Hash of S&P 500 indicators.
 	HongKong  map[string]string // Hash of HKHSI indicators.
+  
+  stocks  []Stock  // Array of stock quote data.
   
 	regex     *regexp.Regexp // Regex to parse market data from HTML.
 	errors    string         // Error(s), if any.
@@ -93,7 +96,7 @@ func (market *zhcnMarket) getUrl() (string) {
     zhcnMarketCodes[`ShenZhen`])
   url := fmt.Sprintf(zhcnMarketURL, codes)
   
-  glog.Info(url)
+  log.Debug(url)
 
   return url
 }
@@ -119,9 +122,13 @@ func (market *zhcnMarket) Fetch() (self *zhcnMarket) {
 		panic(err)
 	}
   
-  glog.Info("Get body: ", body)
-	body = market.isMarketOpen(body)
-	return market.extract(market.trim(body))
+  // log.Debug("Get body: ", string(body))
+  
+  var dataArray []string
+  dataArray = strings.Split(string(body), `;`)
+	
+	// body = market.isMarketOpen(body)
+	return market.extract(dataArray)
 }
 
 // Ok returns two values: 1) boolean indicating whether the error has occured,
@@ -147,10 +154,13 @@ func (market *zhcnMarket) trim(body []byte) []byte {
 }
 
 //-----------------------------------------------------------------------------
-func (market *zhcnMarket) extract(snippet []byte) *zhcnMarket {
-	matches := market.regex.FindStringSubmatch(string(snippet))
+func (market *zhcnMarket) extract(snippet []string) *zhcnMarket {
+	// matches := market.regex.FindStringSubmatch(string(snippet))
+	var matches []string
+	
+	portfolio.Stock
 
-	if len(matches) < 31 {
+	if len(matches) < 44 {
 		panic(`Unable to parse ` + zhcnMarketURL)
 	}
 

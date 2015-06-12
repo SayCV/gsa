@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license that can
 // be found in the LICENSE file.
 
-package term
+package portfolio
 
 import (
 	`bytes`
@@ -11,6 +11,7 @@ import (
 	`net/http`
 	`reflect`
 	`strings`
+	`github.com/SayCV/gsa/term`
 )
 
 // See http://www.gummy-stuff.org/Yahoo-stocks.htm
@@ -20,29 +21,6 @@ import (
 // k2: realtime change vs p2: change
 //
 const zhcnQuotesURL = `http://download.finance.yahoo.com/d/quotes.csv?s=%s&f=sl1c1p2oghjkva2r2rdyj3j1`
-
-// Stock stores quote information for the particular stock ticker. The data
-// for all the fields except 'Advancing' is fetched using Yahoo market API.
-type Stock struct {
-	Ticker     string // Stock ticker.
-	LastTrade  string // l1: last trade.
-	Change     string // c6: change real time.
-	ChangePct  string // k2: percent change real time.
-	Open       string // o: market open price.
-	Low        string // g: day's low.
-	High       string // h: day's high.
-	Low52      string // j: 52-weeks low.
-	High52     string // k: 52-weeks high.
-	Volume     string // v: volume.
-	AvgVolume  string // a2: average volume.
-	PeRatio    string // r2: P/E ration real time.
-	PeRatioX   string // r: P/E ration (fallback when real time is N/A).
-	Dividend   string // d: dividend.
-	Yield      string // y: dividend yield.
-	MarketCap  string // j3: market cap real time.
-	MarketCapX string // j1: market cap (fallback when real time is N/A).
-	Advancing  bool   // True when change is >= $0.
-}
 
 // Quotes stores relevant pointers as well as the array of stock quotes for
 // the tickers we are tracking.

@@ -6,10 +6,9 @@ package main
 
 import (
 	`github.com/SayCV/gsa/term`
+	`github.com/SayCV/gsa/log`
 	`github.com/michaeldv/termbox-go`
 	`time`
-	`flag`
-	"github.com/golang/glog"
 	"os"
 )
 
@@ -119,12 +118,18 @@ loop:
 
 //-----------------------------------------------------------------------------
 func main() {
-  flag.Parse()
+  
+  //os.Setenv(`LOG_LEVEL`, 10)
+  os.Setenv(`LOG_TO_STDERR`, `true`)
+  os.Setenv(`LOG_FILE_LOCATION`, `./`)
+  log.Init()
+  
+  // flag.Parse()
 	p, err := os.Getwd()  
   if err != nil {  
-    glog.Info("Getwd: ", err)  
+    log.Debug("Getwd: ", err)  
   } else {  
-    glog.Info("Getwd: ", p)  
+    log.Debug("Getwd: ", p)  
   }
 
 	screen := term.NewScreen()
@@ -133,5 +138,5 @@ func main() {
 	profile := term.NewProfile()
 	mainLoop(screen, profile)
 	
-	glog.Flush()
+	// log.Flush()
 }
