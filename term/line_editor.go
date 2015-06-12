@@ -8,6 +8,7 @@ import (
 	`github.com/michaeldv/termbox-go`
 	`regexp`
 	`strings`
+	`github.com/SayCV/gsa/portfolio`
 )
 
 // LineEditor kicks in when user presses '+' or '-' to add or delete stock
@@ -20,12 +21,12 @@ type LineEditor struct {
 	prompt  string         // Prompt string for the command.
 	input   string         // User typed input string.
 	screen  *Screen        // Pointer to Screen.
-	quotes  *Quotes        // Pointer to Quotes.
+	quotes  *portfolio.Quotes        // Pointer to Quotes.
 	regex   *regexp.Regexp // Regex to split comma-delimited input string.
 }
 
 // Returns new initialized LineEditor struct.
-func NewLineEditor(screen *Screen, quotes *Quotes) *LineEditor {
+func NewLineEditor(screen *Screen, quotes *portfolio.Quotes) *LineEditor {
 	return &LineEditor{
 		screen: screen,
 		quotes: quotes,
@@ -173,7 +174,7 @@ func (editor *LineEditor) execute() *LineEditor {
 	case '-':
 		tickers := editor.tokenize()
 		if len(tickers) > 0 {
-			before := len(editor.quotes.profile.Tickers)
+			before := len(editor.quotes.GetProfile().GetTickers())
 			if removed, _ := editor.quotes.RemoveTickers(tickers); removed > 0 {
 				editor.screen.Draw(editor.quotes)
 

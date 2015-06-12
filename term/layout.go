@@ -12,6 +12,7 @@ import (
 	`strings`
 	`text/template`
 	`time`
+	`github.com/SayCV/gsa/portfolio`
 )
 
 // Column describes formatting rules for individual column within the list
@@ -62,7 +63,7 @@ func NewLayout() *Layout {
 
 // Market merges given market data structure with the market template and
 // returns formatted string that includes highlighting markup.
-func (layout *Layout) Market(market *zhcnMarket) string {
+func (layout *Layout) Market(market *portfolio.ZhcnMarket) string {
 	if ok, err := market.Ok(); !ok { // If there was an error fetching market data...
 		return err // then simply return the error string.
 	}
@@ -81,7 +82,7 @@ func (layout *Layout) Market(market *zhcnMarket) string {
 // Quotes uses quotes template to format timestamp, stock quotes header,
 // and the list of given stock quotes. It returns formatted string with
 // all the necessary markup.
-func (layout *Layout) Quotes(quotes *Quotes) string {
+func (layout *Layout) Quotes(quotes *portfolio.Quotes) string {
 	if ok, err := quotes.Ok(); !ok { // If there was an error fetching stock quotes...
 		return err // then simply return the error string.
 	}
@@ -89,10 +90,10 @@ func (layout *Layout) Quotes(quotes *Quotes) string {
 	vars := struct {
 		Now    string  // Current timestamp.
 		Header string  // Formatted header line.
-		Stocks []Stock // List of formatted stock quotes.
+		Stocks []portfolio.Stock // List of formatted stock quotes.
 	}{
 		time.Now().Format(`3:04:05pm PST`),
-		layout.Header(quotes.profile),
+		layout.Header(quotes.GetProfile()),
 		layout.prettify(quotes),
 	}
 
@@ -106,8 +107,8 @@ func (layout *Layout) Quotes(quotes *Quotes) string {
 // formatting includes placing an arrow next to the sorted column title.
 // When the column editor is active it knows how to highlight currently
 // selected column title.
-func (layout *Layout) Header(profile *Profile) string {
-	str, selectedColumn := ``, profile.selectedColumn
+func (layout *Layout) Header(profile *portfolio.Profile) string {
+	str, selectedColumn := ``, profile.GetSelectedColumn()
 
 	for i, col := range layout.columns {
 		arrow := arrowFor(i, profile)
@@ -128,13 +129,13 @@ func (layout *Layout) TotalColumns() int {
 }
 
 //-----------------------------------------------------------------------------
-func (layout *Layout) prettify(quotes *Quotes) []Stock {
-	pretty := make([]Stock, len(quotes.stocks))
+func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
+	pretty := make([]portfolio.Stock, len(quotes.GetStocks()))
 	//
 	// Iterate over the list of stocks and properly format all its columns.
 	//
-	for i, stock := range quotes.stocks {
-		pretty[i].Advancing = stock.Advancing
+	for i, stock := range quotes.GetStocks() {
+		pretty[i].SetAdvancing(stock.GetAdvancing())
 		//
 		// Iterate over the list of stock columns. For each column name:
 		// - Get current column value.
@@ -153,7 +154,7 @@ func (layout *Layout) prettify(quotes *Quotes) []Stock {
 		}
 	}
 
-	profile := quotes.profile
+	profile := quotes.GetProfile()
 	if layout.sorter == nil { // Initialize sorter on first invocation.
 		layout.sorter = NewSorter(profile)
 	}
@@ -162,7 +163,7 @@ func (layout *Layout) prettify(quotes *Quotes) []Stock {
 	// Group stocks by advancing/declining unless sorted by Chanage or Change%
 	// in which case the grouping has been done already.
 	//
-	if profile.Grouped && (profile.SortColumn < 2 || profile.SortColumn > 3) {
+	if profile.Grouped && (profile.GetSortColumn() < 2 || profile.GetSortColumn() > 3) {
 		pretty = group(pretty)
 	}
 
@@ -216,18 +217,18 @@ func highlight(collections ...map[string]string) {
 }
 
 //-----------------------------------------------------------------------------
-func group(stocks []Stock) []Stock {
-	grouped := make([]Stock, len(stocks))
+func group(stocks []portfolio.Stock) []portfolio.Stock {
+	grouped := make([]portfolio.Stock, len(stocks))
 	current := 0
 
 	for _, stock := range stocks {
-		if stock.Advancing {
+		if stock.GetAdvancing() {
 			grouped[current] = stock
 			current++
 		}
 	}
 	for _, stock := range stocks {
-		if !stock.Advancing {
+		if !stock.GetAdvancing() {
 			grouped[current] = stock
 			current++
 		}
@@ -237,9 +238,9 @@ func group(stocks []Stock) []Stock {
 }
 
 //-----------------------------------------------------------------------------
-func arrowFor(column int, profile *Profile) string {
-	if column == profile.SortColumn {
-		if profile.Ascending {
+func arrowFor(column int, profile *portfolio.Profile) string {
+	if column == profile.GetSortColumn() {
+		if profile.GetAscending() {
 			return string('\U00002191')
 		}
 		return string('\U00002193')

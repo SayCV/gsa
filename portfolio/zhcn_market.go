@@ -16,9 +16,9 @@ import (
 	//`github.com/SayCV/gsa/portfolio`
 )
 
-const zhcnMarketURL = `http://qt.gtimg.cn/q=%s`
+const ZhcnMarketURL = `http://qt.gtimg.cn/q=%s`
 
-var zhcnMarketCodes = map[string]string{
+var ZhcnMarketCodes = map[string]string{
   `ShangHai`         : `sh000001`,
   `ShenZhen`         : `sz399001`,
   `GrowthEnterprise` : `sh000300`,
@@ -28,7 +28,7 @@ var zhcnMarketCodes = map[string]string{
 
 // Market stores current market information displayed in the top three lines of
 // the screen. The market data is fetched and parsed from the HTML page above.
-type zhcnMarket struct {
+type ZhcnMarket struct {
 	IsClosed  bool              // True when China stcok markets are closed.
 	
 	ShangHai		map[string]string // Hash of S SECI Jones indicators.
@@ -50,8 +50,8 @@ type zhcnMarket struct {
 }
 
 // Returns new initialized Market struct.
-func NewMarket() *zhcnMarket {
-	market := &zhcnMarket{}
+func NewMarket() *ZhcnMarket {
+	market := &ZhcnMarket{}
 	market.IsClosed = false
 	
 	market.ShangHai = make(map[string]string)
@@ -90,28 +90,28 @@ func NewMarket() *zhcnMarket {
 	return market
 }
 
-func (market *zhcnMarket) getUrl() (string) {
+func (market *ZhcnMarket) getUrl() (string) {
   codes := fmt.Sprintf(`%s,%s`,
-    zhcnMarketCodes[`ShangHai`],
-    zhcnMarketCodes[`ShenZhen`])
-  url := fmt.Sprintf(zhcnMarketURL, codes)
+    ZhcnMarketCodes[`ShangHai`],
+    ZhcnMarketCodes[`ShenZhen`])
+  url := fmt.Sprintf(ZhcnMarketURL, codes)
   
   log.Debug(url)
 
   return url
 }
 
-// Fetch downloads HTML page from the 'zhcnMarketURL', parses it, and stores resulting data
+// Fetch downloads HTML page from the 'ZhcnMarketURL', parses it, and stores resulting data
 // in internal hashes. If download or data parsing fails Fetch populates 'market.errors'.
-func (market *zhcnMarket) Fetch() (self *zhcnMarket) {
+func (market *ZhcnMarket) Fetch() (self *ZhcnMarket) {
 	self = market // <-- This ensures we return correct market after recover() from panic().
 	defer func() {
 		if err := recover(); err != nil {
 			market.errors = fmt.Sprintf("Error fetching market data...\n%s", err)
 		}
 	}()
-  _zhcnMarketURL := market.getUrl()
-	response, err := http.Get(_zhcnMarketURL)
+  _ZhcnMarketURL := market.getUrl()
+	response, err := http.Get(_ZhcnMarketURL)
 	if err != nil {
 		panic(err)
 	}
@@ -133,18 +133,18 @@ func (market *zhcnMarket) Fetch() (self *zhcnMarket) {
 
 // Ok returns two values: 1) boolean indicating whether the error has occured,
 // and 2) the error text itself.
-func (market *zhcnMarket) Ok() (bool, string) {
+func (market *ZhcnMarket) Ok() (bool, string) {
 	return market.errors == ``, market.errors
 }
 
 //-----------------------------------------------------------------------------
-func (market *zhcnMarket) isMarketOpen(body []byte) []byte {
+func (market *ZhcnMarket) isMarketOpen(body []byte) []byte {
 	// TBD -- CNN page doesn't seem to have market open/close indicator.
 	return body
 }
 
 //-----------------------------------------------------------------------------
-func (market *zhcnMarket) trim(body []byte) []byte {
+func (market *ZhcnMarket) trim(body []byte) []byte {
 	start := bytes.Index(body, []byte(`Markets Overview`))
 	finish := bytes.LastIndex(body, []byte(`Gainers`))
 	snippet := bytes.Replace(body[start:finish], []byte{'\n'}, []byte{}, -1)
@@ -154,14 +154,14 @@ func (market *zhcnMarket) trim(body []byte) []byte {
 }
 
 //-----------------------------------------------------------------------------
-func (market *zhcnMarket) extract(snippet []string) *zhcnMarket {
+func (market *ZhcnMarket) extract(snippet []string) *ZhcnMarket {
 	// matches := market.regex.FindStringSubmatch(string(snippet))
 	var matches []string
 	
-	portfolio.Stock
+	//portfolio.Stock
 
 	if len(matches) < 44 {
-		panic(`Unable to parse ` + zhcnMarketURL)
+		panic(`Unable to parse ` + ZhcnMarketURL)
 	}
 
 	market.ShangHai[`change`] = matches[1]

@@ -4,26 +4,29 @@
 
 package term
 
-import `github.com/michaeldv/termbox-go`
+import (
+	`github.com/michaeldv/termbox-go`
+	`github.com/SayCV/gsa/portfolio`
+)
 
 // ColumnEditor handles column sort order. When activated it highlights
 // current column name in the header, then waits for arrow keys (choose
 // another column), Enter (reverse sort order), or Esc (exit).
 type ColumnEditor struct {
 	screen  *Screen  // Pointer to Screen so we could use screen.Draw().
-	quotes  *Quotes  // Pointer to Quotes to redraw them when the sort order changes.
+	quotes  *portfolio.Quotes  // Pointer to Quotes to redraw them when the sort order changes.
 	layout  *Layout  // Pointer to Layout to redraw stock quotes header.
-	profile *Profile // Pointer to Profile where we save newly selected sort order.
+	profile *portfolio.Profile // Pointer to Profile where we save newly selected sort order.
 }
 
 // Returns new initialized ColumnEditor struct. As part of initialization it
 // highlights current column name (as stored in Profile).
-func NewColumnEditor(screen *Screen, quotes *Quotes) *ColumnEditor {
+func NewColumnEditor(screen *Screen, quotes *portfolio.Quotes) *ColumnEditor {
 	editor := &ColumnEditor{
 		screen:  screen,
 		quotes:  quotes,
 		layout:  screen.layout,
-		profile: quotes.profile,
+		profile: quotes.GetProfile(),
 	}
 
 	editor.selectCurrentColumn()
@@ -55,25 +58,25 @@ func (editor *ColumnEditor) Handle(event termbox.Event) bool {
 
 //-----------------------------------------------------------------------------
 func (editor *ColumnEditor) selectCurrentColumn() *ColumnEditor {
-	editor.profile.selectedColumn = editor.profile.SortColumn
+	editor.profile.SetSelectedColumn(editor.profile.SortColumn)
 	editor.redrawHeader()
 	return editor
 }
 
 //-----------------------------------------------------------------------------
 func (editor *ColumnEditor) selectLeftColumn() *ColumnEditor {
-	editor.profile.selectedColumn--
-	if editor.profile.selectedColumn < 0 {
-		editor.profile.selectedColumn = editor.layout.TotalColumns() - 1
+	editor.profile.SetSelectedColumn(editor.profile.GetSelectedColumn() - 1)
+	if editor.profile.GetSelectedColumn() < 0 {
+		editor.profile.SetSelectedColumn(editor.layout.TotalColumns() - 1)
 	}
 	return editor
 }
 
 //-----------------------------------------------------------------------------
 func (editor *ColumnEditor) selectRightColumn() *ColumnEditor {
-	editor.profile.selectedColumn++
-	if editor.profile.selectedColumn > editor.layout.TotalColumns()-1 {
-		editor.profile.selectedColumn = 0
+	editor.profile.SetSelectedColumn(editor.profile.GetSelectedColumn() + 1)
+	if editor.profile.GetSelectedColumn() > editor.layout.TotalColumns()-1 {
+		editor.profile.SetSelectedColumn(0)
 	}
 	return editor
 }
@@ -89,7 +92,7 @@ func (editor *ColumnEditor) execute() *ColumnEditor {
 
 //-----------------------------------------------------------------------------
 func (editor *ColumnEditor) done() bool {
-	editor.profile.selectedColumn = -1
+	editor.profile.SetSelectedColumn(-1)
 	return true
 }
 

@@ -9,6 +9,7 @@ import (
 	`strings`
 	`time`
 	`github.com/SayCV/gsa/util`
+	`github.com/SayCV/gsa/portfolio`
 )
 
 // Screen is thin wrapper aroung Termbox library to provide basic display
@@ -92,11 +93,11 @@ func (screen *Screen) Draw(objects ...interface{}) *Screen {
 	}
 	for _, ptr := range objects {
 		switch ptr.(type) {
-		case *zhcnMarket:
-			object := ptr.(*zhcnMarket)
+		case *portfolio.ZhcnMarket:
+			object := ptr.(*portfolio.ZhcnMarket)
 			screen.draw(screen.layout.Market(object.Fetch()))
-		case *Quotes:
-			object := ptr.(*Quotes)
+		case *portfolio.Quotes:
+			object := ptr.(*portfolio.Quotes)
 			screen.draw(screen.layout.Quotes(object.Fetch()))
 		case time.Time:
 			timestamp := ptr.(time.Time).Format(`3:04:05pm PST`)

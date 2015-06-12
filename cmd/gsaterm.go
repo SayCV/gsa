@@ -5,11 +5,12 @@
 package main
 
 import (
-	`github.com/SayCV/gsa/term`
-	`github.com/SayCV/gsa/log`
-	`github.com/michaeldv/termbox-go`
 	`time`
 	"os"
+	`github.com/michaeldv/termbox-go`
+	`github.com/SayCV/gsa/log`
+	`github.com/SayCV/gsa/portfolio`
+	`github.com/SayCV/gsa/term`
 )
 
 const help = `gsa v0.1.0 -- Copyright (c) 2015 by QDevor. All Rights Reserved.
@@ -31,7 +32,7 @@ Enter comma-delimited list of stock tickers when prompted.
 `
 
 //-----------------------------------------------------------------------------
-func mainLoop(screen *term.Screen, profile *term.Profile) {
+func mainLoop(screen *term.Screen, profile *portfolio.Profile) {
 	var lineEditor *term.LineEditor
 	var columnEditor *term.ColumnEditor  
 
@@ -48,8 +49,8 @@ func mainLoop(screen *term.Screen, profile *term.Profile) {
 		}
 	}()
 
-	market := term.NewMarket()
-	quotes := term.NewQuotes(market, profile)
+	market := portfolio.NewMarket()
+	quotes := portfolio.NewQuotes(market, profile)
 	screen.Draw(market, quotes)
 
 loop:
@@ -135,7 +136,7 @@ func main() {
 	screen := term.NewScreen()
 	defer screen.Close()
 
-	profile := term.NewProfile()
+	profile := portfolio.NewProfile()
 	mainLoop(screen, profile)
 	
 	// log.Flush()

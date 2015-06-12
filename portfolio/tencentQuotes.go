@@ -9,7 +9,7 @@ import (
 	`fmt`
 	`io/ioutil`
 	`net/http`
-	`reflect`
+	//`reflect`
 	`strings`
 	//`github.com/SayCV/gsa/term`
 )
@@ -20,24 +20,32 @@ import (
 // c2: realtime change vs c1: change
 // k2: realtime change vs p2: change
 //
-const zhcnQuotesURL = `http://download.finance.yahoo.com/d/quotes.csv?s=%s&f=sl1c1p2oghjkva2r2rdyj3j1`
+const zhcnQuotesURL = `http://qt.gtimg.cn/q=%s`
 
 // Quotes stores relevant pointers as well as the array of stock quotes for
 // the tickers we are tracking.
 type Quotes struct {
-	market  *zhcnMarket  // Pointer to Market.
+	market  *ZhcnMarket  // Pointer to Market.
 	profile *Profile // Pointer to Profile.
 	stocks  []Stock  // Array of stock quote data.
 	errors  string   // Error string if any.
 }
 
 // Sets the initial values and returns new Quotes struct.
-func NewQuotes(market *zhcnMarket, profile *Profile) *Quotes {
+func NewQuotes(market *ZhcnMarket, profile *Profile) *Quotes {
 	return &Quotes{
 		market:  market,
 		profile: profile,
 		errors:  ``,
 	}
+}
+
+func (quotes *Quotes) GetProfile() *Profile {
+  return quotes.profile
+}
+
+func (quotes *Quotes) GetStocks() []Stock {
+  return quotes.stocks
 }
 
 // Fetch the latest stock quotes and parse raw fetched data into array of
@@ -50,7 +58,7 @@ func (quotes *Quotes) Fetch() (self *Quotes) {
 				quotes.errors = fmt.Sprintf("\n\n\n\nError fetching stock quotes...\n%s", err)
 			}
 		}()
-
+    
 		url := fmt.Sprintf(zhcnQuotesURL, strings.Join(quotes.profile.Tickers, `+`))
 		response, err := http.Get(url)
 		if err != nil {
@@ -62,8 +70,12 @@ func (quotes *Quotes) Fetch() (self *Quotes) {
 		if err != nil {
 			panic(err)
 		}
-
-		quotes.parse(sanitize(body))
+    
+		var stockJsonArray []string
+    stockJsonArray = strings.Split(string(body), `;`)
+	
+	  // body = market.isMarketOpen(body)
+    quotes.parse(stockJsonArray)
 	}
 
 	return quotes
@@ -104,42 +116,8 @@ func (quotes *Quotes) isReady() bool {
 
 // Use reflection to parse and assign the quotes data fetched using the Yahoo
 // market API.
-func (quotes *Quotes) parse(body []byte) *Quotes {
-	lines := bytes.Split(body, []byte{'\n'})
-	quotes.stocks = make([]Stock, len(lines))
-	//
-	// Get the total number of fields in the Stock struct. Skip the last
-	// Advanicing field which is not fetched.
-	//
-	fieldsCount := reflect.ValueOf(quotes.stocks[0]).NumField() - 1
-	//
-	// Split each line into columns, then iterate over the Stock struct
-	// fields to assign column values.
-	//
-	for i, line := range lines {
-		columns := bytes.Split(bytes.TrimSpace(line), []byte{','})
-		for j := 0; j < fieldsCount; j++ {
-			// ex. quotes.stocks[i].Ticker = string(columns[0])
-			reflect.ValueOf(&quotes.stocks[i]).Elem().Field(j).SetString(string(columns[j]))
-		}
-		//
-		// Try realtime value and revert to the last known if the
-		// realtime is not available.
-		//
-		if quotes.stocks[i].PeRatio == `N/A` && quotes.stocks[i].PeRatioX != `N/A` {
-			quotes.stocks[i].PeRatio = quotes.stocks[i].PeRatioX
-		}
-		if quotes.stocks[i].MarketCap == `N/A` && quotes.stocks[i].MarketCapX != `N/A` {
-			quotes.stocks[i].MarketCap = quotes.stocks[i].MarketCapX
-		}
-		//
-		// Stock is advancing if the change is not negative (i.e. $0.00
-		// is also "advancing").
-		//
-		quotes.stocks[i].Advancing = (quotes.stocks[i].Change[0:1] != `-`)
-	}
-
-	return quotes
+func (quotes *Quotes) parse(body []string) *Quotes {
+	return quotes.tencentParser(body)
 }
 
 //-----------------------------------------------------------------------------

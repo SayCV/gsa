@@ -48,6 +48,26 @@ func NewProfile() *Profile {
 	return profile
 }
 
+func (profile *Profile) GetTickers() []string {
+  return profile.Tickers
+}
+
+func (profile *Profile) GetSortColumn() int {
+  return profile.SortColumn
+}
+
+func (profile *Profile) GetAscending() bool {
+  return profile.Ascending
+}
+
+func (profile *Profile) GetSelectedColumn() int {
+  return profile.selectedColumn
+}
+
+func (profile *Profile) SetSelectedColumn(selectedColumn int) {
+  profile.selectedColumn = selectedColumn
+}
+
 // Save serializes settings using JSON and saves them in ~/.gsarc file.
 func (profile *Profile) Save() error {
 	data, err := json.Marshal(profile)

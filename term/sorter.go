@@ -8,16 +8,17 @@ import (
 	`sort`
 	`strconv`
 	`strings`
+	`github.com/SayCV/gsa/portfolio`
 )
 
 // Sorter gets called to sort stock quotes by one of the columns. The
 // setup is rather lengthy; there should probably be more concise way
 // that uses reflection and avoids hardcoding the column names.
 type Sorter struct {
-	profile *Profile // Pointer to where we store sort column and order.
+	profile *portfolio.Profile // Pointer to where we store sort column and order.
 }
 
-type sortable []Stock
+type sortable []portfolio.Stock
 
 func (list sortable) Len() int      { return len(list) }
 func (list sortable) Swap(i, j int) { list[i], list[j] = list[j], list[i] }
@@ -29,10 +30,9 @@ type byChangePctAsc struct{ sortable }
 type byOpenAsc struct{ sortable }
 type byLowAsc struct{ sortable }
 type byHighAsc struct{ sortable }
-type byLow52Asc struct{ sortable }
-type byHigh52Asc struct{ sortable }
+
 type byVolumeAsc struct{ sortable }
-type byAvgVolumeAsc struct{ sortable }
+type byAvgPriceAsc struct{ sortable }
 type byPeRatioAsc struct{ sortable }
 type byDividendAsc struct{ sortable }
 type byYieldAsc struct{ sortable }
@@ -45,105 +45,102 @@ type byChangePctDesc struct{ sortable }
 type byOpenDesc struct{ sortable }
 type byLowDesc struct{ sortable }
 type byHighDesc struct{ sortable }
-type byLow52Desc struct{ sortable }
-type byHigh52Desc struct{ sortable }
+
 type byVolumeDesc struct{ sortable }
-type byAvgVolumeDesc struct{ sortable }
+type byAvgPriceDesc struct{ sortable }
 type byPeRatioDesc struct{ sortable }
 type byDividendDesc struct{ sortable }
 type byYieldDesc struct{ sortable }
 type byMarketCapDesc struct{ sortable }
 
+func float32ToString(input_num float32) string {
+    // to convert a float number to a string
+    return strconv.FormatFloat(float64(input_num), 'f', 2, 32)
+}
+
 func (list byTickerAsc) Less(i, j int) bool {
-	return list.sortable[i].Ticker < list.sortable[j].Ticker
+	return list.sortable[i].GetTicker() < list.sortable[j].GetTicker()
 }
 func (list byLastTradeAsc) Less(i, j int) bool {
-	return list.sortable[i].LastTrade < list.sortable[j].LastTrade
+	return list.sortable[i].GetLastVolume() < list.sortable[j].GetLastVolume()
 }
 func (list byChangeAsc) Less(i, j int) bool {
-	return c(list.sortable[i].Change) < c(list.sortable[j].Change)
+	return c(float32ToString(list.sortable[i].GetChangePrice())) < c(float32ToString(list.sortable[j].GetChangePrice()))
 }
 func (list byChangePctAsc) Less(i, j int) bool {
-	return c(list.sortable[i].ChangePct) < c(list.sortable[j].ChangePct)
+	return c(float32ToString(list.sortable[i].GetChangePricePct())) < c(float32ToString(list.sortable[j].GetChangePricePct()))
 }
 func (list byOpenAsc) Less(i, j int) bool {
-	return list.sortable[i].Open < list.sortable[j].Open
+	return list.sortable[i].GetOpenPrice() < list.sortable[j].GetOpenPrice()
 }
-func (list byLowAsc) Less(i, j int) bool { return list.sortable[i].Low < list.sortable[j].Low }
+func (list byLowAsc) Less(i, j int) bool { return list.sortable[i].GetLowPrice() < list.sortable[j].GetLowPrice() }
 func (list byHighAsc) Less(i, j int) bool {
-	return list.sortable[i].High < list.sortable[j].High
+	return list.sortable[i].GetHighPrice() < list.sortable[j].GetHighPrice()
 }
-func (list byLow52Asc) Less(i, j int) bool {
-	return list.sortable[i].Low52 < list.sortable[j].Low52
-}
-func (list byHigh52Asc) Less(i, j int) bool {
-	return list.sortable[i].High52 < list.sortable[j].High52
-}
+
+
 func (list byVolumeAsc) Less(i, j int) bool {
-	return list.sortable[i].Volume < list.sortable[j].Volume
+	return list.sortable[i].GetVolume() < list.sortable[j].GetVolume()
 }
-func (list byAvgVolumeAsc) Less(i, j int) bool {
-	return list.sortable[i].AvgVolume < list.sortable[j].AvgVolume
+func (list byAvgPriceAsc) Less(i, j int) bool {
+	return list.sortable[i].GetAvgPrice() < list.sortable[j].GetAvgPrice()
 }
 func (list byPeRatioAsc) Less(i, j int) bool {
-	return list.sortable[i].PeRatio < list.sortable[j].PeRatio
+	return list.sortable[i].GetPeRatio() < list.sortable[j].GetPeRatio()
 }
 func (list byDividendAsc) Less(i, j int) bool {
-	return list.sortable[i].Dividend < list.sortable[j].Dividend
+	return list.sortable[i].GetDividend() < list.sortable[j].GetDividend()
 }
 func (list byYieldAsc) Less(i, j int) bool {
-	return list.sortable[i].Yield < list.sortable[j].Yield
+	return list.sortable[i].GetDividendYield() < list.sortable[j].GetDividendYield()
 }
 func (list byMarketCapAsc) Less(i, j int) bool {
-	return m(list.sortable[i].MarketCap) < m(list.sortable[j].MarketCap)
+	return m(list.sortable[i].GetMarketCap()) < m(list.sortable[j].GetMarketCap())
 }
 
 func (list byTickerDesc) Less(i, j int) bool {
-	return list.sortable[j].Ticker < list.sortable[i].Ticker
+	return list.sortable[j].GetTicker() < list.sortable[i].GetTicker()
 }
 func (list byLastTradeDesc) Less(i, j int) bool {
-	return list.sortable[j].LastTrade < list.sortable[i].LastTrade
+	return list.sortable[j].GetLastVolume() < list.sortable[i].GetLastVolume()
 }
 func (list byChangeDesc) Less(i, j int) bool {
-	return c(list.sortable[j].ChangePct) < c(list.sortable[i].ChangePct)
+	return c(float32ToString(list.sortable[j].GetChangePrice())) < c(float32ToString(list.sortable[i].GetChangePrice()))
 }
 func (list byChangePctDesc) Less(i, j int) bool {
-	return c(list.sortable[j].ChangePct) < c(list.sortable[i].ChangePct)
+	return c(float32ToString(list.sortable[j].GetChangePricePct())) < c(float32ToString(list.sortable[i].GetChangePricePct()))
 }
 func (list byOpenDesc) Less(i, j int) bool {
-	return list.sortable[j].Open < list.sortable[i].Open
+	return list.sortable[j].GetOpenPrice() < list.sortable[i].GetOpenPrice()
 }
-func (list byLowDesc) Less(i, j int) bool { return list.sortable[j].Low < list.sortable[i].Low }
+func (list byLowDesc) Less(i, j int) bool { return list.sortable[j].GetLowPrice() < list.sortable[i].GetLowPrice() }
 func (list byHighDesc) Less(i, j int) bool {
-	return list.sortable[j].High < list.sortable[i].High
+	return list.sortable[j].GetHighPrice() < list.sortable[i].GetHighPrice()
 }
-func (list byLow52Desc) Less(i, j int) bool {
-	return list.sortable[j].Low52 < list.sortable[i].Low52
-}
-func (list byHigh52Desc) Less(i, j int) bool {
-	return list.sortable[j].High52 < list.sortable[i].High52
-}
+
+
+
 func (list byVolumeDesc) Less(i, j int) bool {
-	return list.sortable[j].Volume < list.sortable[i].Volume
+	return list.sortable[j].GetVolume() < list.sortable[i].GetVolume()
 }
-func (list byAvgVolumeDesc) Less(i, j int) bool {
-	return list.sortable[j].AvgVolume < list.sortable[i].AvgVolume
+func (list byAvgPriceDesc) Less(i, j int) bool {
+	return list.sortable[j].GetAvgPrice() < list.sortable[i].GetAvgPrice()
 }
 func (list byPeRatioDesc) Less(i, j int) bool {
-	return list.sortable[j].PeRatio < list.sortable[i].PeRatio
+	return list.sortable[j].GetPeRatio() < list.sortable[i].GetPeRatio()
 }
 func (list byDividendDesc) Less(i, j int) bool {
-	return list.sortable[j].Dividend < list.sortable[i].Dividend
+	return list.sortable[j].GetDividend() < list.sortable[i].GetDividend()
 }
 func (list byYieldDesc) Less(i, j int) bool {
-	return list.sortable[j].Yield < list.sortable[i].Yield
+	return list.sortable[j].GetDividendYield() < list.sortable[i].GetDividendYield()
 }
 func (list byMarketCapDesc) Less(i, j int) bool {
-	return m(list.sortable[j].MarketCap) < m(list.sortable[i].MarketCap)
+	return m(list.sortable[j].GetMarketCap()) < m(list.sortable[i].GetMarketCap())
 }
 
 // Returns new Sorter struct.
-func NewSorter(profile *Profile) *Sorter {
+func NewSorter(profile *portfolio.Profile) *Sorter {
 	return &Sorter{
 		profile: profile,
 	}
@@ -151,7 +148,7 @@ func NewSorter(profile *Profile) *Sorter {
 
 // SortByCurrentColumn builds a list of sort interface based on current sort
 // order, then calls sort.Sort to do the actual job.
-func (sorter *Sorter) SortByCurrentColumn(stocks []Stock) *Sorter {
+func (sorter *Sorter) SortByCurrentColumn(stocks []portfolio.Stock) *Sorter {
 	var interfaces []sort.Interface
 
 	if sorter.profile.Ascending {
@@ -163,10 +160,8 @@ func (sorter *Sorter) SortByCurrentColumn(stocks []Stock) *Sorter {
 			byOpenAsc{stocks},
 			byLowAsc{stocks},
 			byHighAsc{stocks},
-			byLow52Asc{stocks},
-			byHigh52Asc{stocks},
 			byVolumeAsc{stocks},
-			byAvgVolumeAsc{stocks},
+			byAvgPriceAsc{stocks},
 			byPeRatioAsc{stocks},
 			byDividendAsc{stocks},
 			byYieldAsc{stocks},
@@ -181,10 +176,8 @@ func (sorter *Sorter) SortByCurrentColumn(stocks []Stock) *Sorter {
 			byOpenDesc{stocks},
 			byLowDesc{stocks},
 			byHighDesc{stocks},
-			byLow52Desc{stocks},
-			byHigh52Desc{stocks},
 			byVolumeDesc{stocks},
-			byAvgVolumeDesc{stocks},
+			byAvgPriceDesc{stocks},
 			byPeRatioDesc{stocks},
 			byDividendDesc{stocks},
 			byYieldDesc{stocks},

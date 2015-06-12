@@ -19,14 +19,14 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
 	quotes.stocks = make([]Stock, len(body))
 	
 	regex = regexp.MustCompile(`\"(.*)\"`)
-	for index, line := range body {
-  	log.Debug(fmt.Sprintf("Get line [%d] is [%s]", index, line))
+	for i, line := range body {
+  	log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
   	
   	matches := regex.FindStringSubmatch(string(line))
   	log.Debug("Get regex: ", len(matches), matches)
   	matchesArray := strings.Split(matches[1], `~`)
   	if len(matchesArray) < 44 {
-			panic(`Unable to parse ` + string(index))
+			panic(`Unable to parse ` + string(i))
 		}
   	
   	name := matchesArray[1]
@@ -37,7 +37,7 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
     volume, _ := 									strconv.ParseUint(matchesArray[6], 10, 64)
     timestamp, _ := 							strconv.ParseUint(matchesArray[30], 10, 64)
     changePrice, _ := 						strconv.ParseFloat(matchesArray[31], 32)
-    changePricePercentage, _ := 	strconv.ParseFloat(matchesArray[32], 32)
+    changePricePct, _ := 	        strconv.ParseFloat(matchesArray[32], 32)
     highPrice, _ := 							strconv.ParseFloat(matchesArray[33], 32)
     lowPrice, _ := 								strconv.ParseFloat(matchesArray[34], 32)
     amount, _ := 									strconv.ParseFloat(matchesArray[37], 32)
@@ -51,7 +51,7 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
     quotes.stocks[i].volume = 								volume
     quotes.stocks[i].timestamp = 							timestamp
     quotes.stocks[i].changePrice = 						float32(changePrice)
-    quotes.stocks[i].changePricePercentage = 	float32(changePricePercentage)
+    quotes.stocks[i].changePricePct = 	      float32(changePricePct)
     quotes.stocks[i].highPrice = 							float32(highPrice)
     quotes.stocks[i].lowPrice = 							float32(lowPrice)
     quotes.stocks[i].amount = 								float32(amount)
