@@ -22,9 +22,10 @@ const ZhcnMarketURL = `http://qt.gtimg.cn/q=%s`
 var ZhcnMarketCodes = map[string]string{
   `ShangHai`         : `sh000001`,
   `ShenZhen`         : `sz399001`,
-  `GrowthEnterprise` : `sh000300`,
-  `ShangHaiFund`     : `sz399006`,
-  `ShenZhenFund`     : `sh000011`,
+  `SmallPlate`       : `sz399005`,
+  `GrowthEnterprise` : `sz399006`,
+  `ShangHaiFund`     : `sh000011`,
+  `HuShen300`        : `sh000300`,
 }
 
 // Market stores current market information displayed in the top three lines of
@@ -34,10 +35,12 @@ type ZhcnMarket struct {
 	
 	ShangHai		map[string]string // Hash of S SECI Jones indicators.
 	ShenZhen		map[string]string // Hash of SZ SECI indicators.
+	
+	SmallPlate		      map[string]string // Hash of SPI indicators.
 	GrowthEnterprise		map[string]string // Hash of GEI indicators.
 	
 	ShangHaiFund	map[string]string
-	ShenZhenFund  map[string]string
+	HuShen300     map[string]string
 	
 	Dow       map[string]string // Hash of Dow Jones indicators.
 	Nasdaq    map[string]string // Hash of NASDAQ indicators.
@@ -57,10 +60,12 @@ func NewMarket() *ZhcnMarket {
 	
 	market.ShangHai = make(map[string]string)
 	market.ShenZhen = make(map[string]string)
+	
+	market.SmallPlate =       make(map[string]string)
 	market.GrowthEnterprise = make(map[string]string)
 	
 	market.ShangHaiFund = make(map[string]string)
-	market.ShenZhenFund = make(map[string]string)
+	market.HuShen300 =    make(map[string]string)
 	
 	market.Dow = make(map[string]string)
 	market.Nasdaq = make(map[string]string)
@@ -92,12 +97,13 @@ func NewMarket() *ZhcnMarket {
 }
 
 func (market *ZhcnMarket) getUrl() (string) {
-  codes := fmt.Sprintf(`%s,%s,%s,%s,%s`,
+  codes := fmt.Sprintf(`%s,%s,%s,%s,%s,%s`,
     ZhcnMarketCodes[`ShangHai`],
     ZhcnMarketCodes[`ShenZhen`],
+    ZhcnMarketCodes[`SmallPlate`],
     ZhcnMarketCodes[`GrowthEnterprise`],
     ZhcnMarketCodes[`ShangHaiFund`],
-    ZhcnMarketCodes[`ShenZhenFund`])
+    ZhcnMarketCodes[`HuShen300`])
   url := fmt.Sprintf(ZhcnMarketURL, codes)
   
   log.Debug(url)
@@ -179,17 +185,21 @@ func (market *ZhcnMarket) extract(snippet []string) *ZhcnMarket {
 	market.ShenZhen[`latest`] =           util.Float32ToString(quotes.stocks[1].GetLastPrice())
 	market.ShenZhen[`percent`] =          util.Float32ToString(quotes.stocks[1].GetChangePricePct())
 
-	market.GrowthEnterprise[`change`] =   util.Float32ToString(quotes.stocks[2].GetChangePrice())
-	market.GrowthEnterprise[`latest`] =   util.Float32ToString(quotes.stocks[2].GetLastPrice())
-	market.GrowthEnterprise[`percent`] =  util.Float32ToString(quotes.stocks[2].GetChangePricePct())
+	market.SmallPlate[`change`] =         util.Float32ToString(quotes.stocks[2].GetChangePrice())
+	market.SmallPlate[`latest`] =         util.Float32ToString(quotes.stocks[2].GetLastPrice())
+	market.SmallPlate[`percent`] =        util.Float32ToString(quotes.stocks[2].GetChangePricePct())
 	
-	market.ShangHaiFund[`change`] =       util.Float32ToString(quotes.stocks[3].GetChangePrice())
-	market.ShangHaiFund[`latest`] =       util.Float32ToString(quotes.stocks[3].GetLastPrice())
-	market.ShangHaiFund[`percent`] =      util.Float32ToString(quotes.stocks[3].GetChangePricePct())
+	market.GrowthEnterprise[`change`] =   util.Float32ToString(quotes.stocks[3].GetChangePrice())
+	market.GrowthEnterprise[`latest`] =   util.Float32ToString(quotes.stocks[3].GetLastPrice())
+	market.GrowthEnterprise[`percent`] =  util.Float32ToString(quotes.stocks[3].GetChangePricePct())
 	
-	market.ShenZhenFund[`change`] =       util.Float32ToString(quotes.stocks[4].GetChangePrice())
-	market.ShenZhenFund[`latest`] =       util.Float32ToString(quotes.stocks[4].GetLastPrice())
-	market.ShenZhenFund[`percent`] =      util.Float32ToString(quotes.stocks[4].GetChangePricePct())
+	market.ShangHaiFund[`change`] =       util.Float32ToString(quotes.stocks[4].GetChangePrice())
+	market.ShangHaiFund[`latest`] =       util.Float32ToStringM(quotes.stocks[4].GetLastPrice(), 0)
+	market.ShangHaiFund[`percent`] =      util.Float32ToString(quotes.stocks[4].GetChangePricePct())
+	
+	market.HuShen300[`change`] =          util.Float32ToString(quotes.stocks[5].GetChangePrice())
+	market.HuShen300[`latest`] =          util.Float32ToStringM(quotes.stocks[5].GetLastPrice(), 0)
+	market.HuShen300[`percent`] =         util.Float32ToString(quotes.stocks[5].GetChangePricePct())
 
 	return market
 }
