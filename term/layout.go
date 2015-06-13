@@ -225,6 +225,7 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
               // etc...
               }
     			    //valueSet[0] = reflect.Value(layout.pad(valueGet, column.width))
+    			    log.Debug(`sSet is `, sSet)
     			  }
     			}
     		}
@@ -279,7 +280,7 @@ func buildQuotesTemplate() *template.Template {
 
 
 {{.Header}}
-{{range.Stocks}}{{if .Advancing}}<green>{{end}}{{.Ticker}}{{.LastTrade}}{{.Change}}{{.ChangePct}}{{.Open}}{{.Low}}{{.High}}{{.Low52}}{{.High52}}{{.Volume}}{{.AvgVolume}}{{.PeRatio}}{{.Dividend}}{{.Yield}}{{.MarketCap}}</>
+{{range.Stocks}}{{if .GetAdvancing()}}<green>{{end}}{{.GetTicker()}}{{.LastTrade}}{{.Change}}{{.ChangePct}}{{.Open}}{{.Low}}{{.High}}{{.Low52}}{{.High52}}{{.Volume}}{{.AvgVolume}}{{.PeRatio}}{{.Dividend}}{{.Yield}}{{.MarketCap}}</>
 {{end}}`
 
 	return template.Must(template.New(`quotes`).Parse(markup))

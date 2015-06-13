@@ -8,6 +8,7 @@ import (
 	//`github.com/michaeldv/termbox-go`
 	//`regexp`
 	//`strings`
+	`github.com/SayCV/gsa/log`
 )
 
 const MAX_DEALING_BLOCK = 5
@@ -254,6 +255,7 @@ func (stock *Stock) SetLowPrice(lowPrice float32) {
 
 func (stock *Stock) SetChangePrice(changePrice float32) {
   stock.changePrice = changePrice
+  log.Debug(`changePrice = `, stock.changePrice)
 }
 
 func (stock *Stock) SetChangePricePct(changePricePct float32) {
