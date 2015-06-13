@@ -67,18 +67,6 @@ func NewProfile() *Profile {
 	return profile
 }
 
-func (profile *Profile) GetTickers() []string {
-  return profile.Tickers
-}
-
-func (profile *Profile) GetSortColumn() int {
-  return profile.SortColumn
-}
-
-func (profile *Profile) GetAscending() bool {
-  return profile.Ascending
-}
-
 func (profile *Profile) GetSelectedColumn() int {
   return profile.selectedColumn
 }

@@ -174,7 +174,7 @@ func (editor *LineEditor) execute() *LineEditor {
 	case '-':
 		tickers := editor.tokenize()
 		if len(tickers) > 0 {
-			before := len(editor.quotes.GetProfile().GetTickers())
+			before := len(editor.quotes.GetProfile().Tickers)
 			if removed, _ := editor.quotes.RemoveTickers(tickers); removed > 0 {
 				editor.screen.Draw(editor.quotes)
 

@@ -140,7 +140,7 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
 	// Iterate over the list of stocks and properly format all its columns.
 	//
 	for i, stock := range quotes.GetStocks() {
-		pretty[i].SetAdvancing(stock.GetAdvancing())
+		pretty[i].Advancing = stock.Advancing
 		//
 		// Iterate over the list of stock columns. For each column name:
 		// - Get current column value.
@@ -152,84 +152,85 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
 			
 			psGet := reflect.ValueOf(&stock) // pointer to struct - addressable
       sGet := psGet.Elem() // struct
-      log.Debug("Elem is ", sGet)
-      if sGet.Kind() == reflect.Struct {
-        // exported field
-        // f := s.FieldByName(column.name)
-        // if f.IsValid() {
+      log.Debug("sGet is ", sGet)
+      if sGet.Kind() != reflect.Struct {
+        log.Debug(`sGet is Invalid`)
+        return nil
+      }
+      // exported field
+      fGet := sGet.FieldByName(column.name)
+      log.Debug(`fGet is `, fGet)
+      if !fGet.IsValid() {
+        log.Debug(`fGet is Invalid`)
+        return nil
+      }
         // A Value can be changed only if it is 
         // addressable and was not obtained by 
         // the use of unexported struct fields.
         // if f.CanSet() {
-        // change value of N
-        // if f.Kind() == reflect.Int {
-        // if !f.OverflowInt(x) {
-        //   f.SetInt(x)
+          // change value of N
+          // if f.Kind() == reflect.Int {
+            // if !f.OverflowInt(x) {
+            // f.SetInt(x)
+            // }
+            
+          // }
         // }
-        fGet := sGet.FieldByName(strings.ToLower(string(column.name[0])) + column.name[1:])
-        log.Debug("sGet.FieldByName is ", strings.ToLower(string(column.name[0])) + column.name[1:])
-			  mGet := psGet.MethodByName(`Get` + column.name)
-			  log.Debug(`mGet is `, mGet)
-			  var valueGet string
-			  if mGet.IsValid() {
-			    valueGetArray := mGet.Call([]reflect.Value{})
-			    log.Debug("fGet is ", fGet)
-			    log.Debug("fGet.Kind is ", fGet.Kind())
-			    switch fGet.Kind() {
-          case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-            valueGet = strconv.FormatInt(valueGetArray[0].Int(), 10)
-          case reflect.Float32:
-            valueGet = strconv.FormatFloat(valueGetArray[0].Float(), 'f', 2, 32)
-            //_valueGet = float32(__valueGet)
-          case reflect.String:
-            valueGet = valueGetArray[0].String()
-          // etc...
-          }
-			    log.Debug("valueGetArray is ", valueGetArray)
-			    log.Debug("valueGet is ", valueGet, " orig is ", valueGetArray[0])
-			    //log.Debug("valueGet.Kind is ", valueGet.Kind())
-			    if column.formatter != nil {
-				    // ex. value = currency(valueGet)
-				    valueGet = column.formatter(valueGet)
-			    }
-    			// ex. pretty[i].Change = layout.pad(valueGet, 10)
-    			log.Debug("layout.pad is ", layout.pad(valueGet, column.width))
-    			log.Debug("column.name is ", column.name)
-    			log.Debug("Elem is ", reflect.ValueOf(&pretty[i]).Elem())
-    			log.Debug("FieldByName is ", reflect.ValueOf(&pretty[i]).Elem().FieldByName(column.name))
-    			//reflect.ValueOf(&pretty[i]).Elem().FieldByName(column.name).SetString(layout.pad(valueGet, column.width))
-    			psSet := reflect.ValueOf(&pretty[i]) // pointer to struct - addressable
-          sSet := psSet.Elem() // struct
-          log.Debug("Elem is ", sSet)
-          if sSet.Kind() == reflect.Struct {
-    			  mSet := psSet.MethodByName(`Set` + column.name)
-    			  log.Debug(`mSet is `, mSet)
-    			  if mSet.IsValid() {
-    			    _valueSet := layout.pad(valueGet, column.width)
-    			    log.Debug(`_valueSet is `, _valueSet)
-    			    switch fGet.Kind() {
-              case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-                valueSet, _ := strconv.ParseInt(_valueSet, 10, 64)
-                argsSet := []reflect.Value{reflect.ValueOf(valueSet)}
-                mSet.Call(argsSet)
-              case reflect.Float32:
-                __valueSet, _ := strconv.ParseFloat(_valueSet, 32)
-                valueSet := float32(__valueSet)
-                argsSet := []reflect.Value{reflect.ValueOf(valueSet)}
-                log.Debug(`argsSet is `, argsSet)
-                mSet.Call(argsSet)
-              case reflect.String:
-                valueSet := _valueSet
-                argsSet := []reflect.Value{reflect.ValueOf(valueSet)}
-                mSet.Call(argsSet)
-              // etc...
-              }
-    			    //valueSet[0] = reflect.Value(layout.pad(valueGet, column.width))
-    			    log.Debug(`sSet is `, sSet)
-    			  }
-    			}
-    		}
+      // value := reflect.ValueOf(&stock).Elem().FieldByName(column.name).String()
+      var valueGet string
+      switch fGet.Kind() {
+      case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+        valueGet = strconv.FormatInt(fGet.Int(), 10)
+      case reflect.Float32:
+        valueGet = strconv.FormatFloat(fGet.Float(), 'f', 2, 32)
+      case reflect.String:
+        valueGet = fGet.String()
+      // etc...
+      }
+			log.Debug("valueGet is ", valueGet)
+  		if column.formatter != nil {
+  		  // ex. value = currency(valueGet)
+  			// valueGet = column.formatter(valueGet)
+  		}
+    	// ex. pretty[i].Change = layout.pad(valueGet, 10)
+
+    	//reflect.ValueOf(&pretty[i]).Elem().FieldByName(column.name).SetString(layout.pad(valueGet, column.width))
+    	psSet := reflect.ValueOf(&pretty[i]) // pointer to struct - addressable
+      sSet := psSet.Elem() // struct
+      log.Debug(`sSet is `, sSet)
+      if sSet.Kind() != reflect.Struct {
+         log.Debug(`sSet is Invalid`)
+         return nil
+      }
+      fSet := sSet.FieldByName(column.name)
+      log.Debug(`fSet is `, fSet)
+      if !fSet.IsValid() {
+        log.Debug(`fSet is Invalid`)
+        return nil
+      }
+    	
+    	if !fSet.CanSet() {
+    	  log.Debug(`fSet not CanSet`)
+        return nil
     	}
+    	// fSet.SetString(layout.pad(valueGet, column.width))
+    	valueGet = layout.pad(valueGet, column.width)
+    	log.Debug("valueGet by pad is ", valueGet)
+    	switch fSet.Kind() {
+      case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+        valueSet, _ := strconv.ParseInt(valueGet, 10, 64)
+        log.Debug(`valueSet [int] is `, valueSet)
+        fSet.SetInt(valueSet)
+      case reflect.Float32, reflect.Float64:
+        valueSet, _ := strconv.ParseFloat(valueGet, 32)
+        log.Debug(`valueSet [float] is `, valueGet)
+        fSet.SetFloat(valueSet)
+      case reflect.String:
+        log.Debug(`valueSet [string] is `, valueGet)
+        fSet.SetString(valueGet)
+      // etc...
+      }
+      log.Debug(`fSet [final] is `, fSet)
 		}
 	}
 
@@ -242,7 +243,7 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
 	// Group stocks by advancing/declining unless sorted by Chanage or Change%
 	// in which case the grouping has been done already.
 	//
-	if profile.Grouped && (profile.GetSortColumn() < 2 || profile.GetSortColumn() > 3) {
+	if profile.Grouped && (profile.SortColumn < 2 || profile.SortColumn > 3) {
 		pretty = group(pretty)
 	}
 
@@ -280,7 +281,7 @@ func buildQuotesTemplate() *template.Template {
 
 
 {{.Header}}
-{{range.Stocks}}{{if .GetAdvancing()}}<green>{{end}}{{.GetTicker()}}{{.LastTrade}}{{.Change}}{{.ChangePct}}{{.Open}}{{.Low}}{{.High}}{{.Low52}}{{.High52}}{{.Volume}}{{.AvgVolume}}{{.PeRatio}}{{.Dividend}}{{.Yield}}{{.MarketCap}}</>
+{{range.Stocks}}{{if .Advancing}}<green>{{end}}{{.Code}}{{.LastPrice}}{{.ChangePrice}}{{.ChangePricePct}}{{.OpenPrice}}{{.LowPrice}}{{.HighPrice}}{{/*.Low52*/}}{{/*.High52*/}}{{.Volume}}{{.AvgPrice}}{{.PeRatio}}{{.Dividend}}{{.DividendYield}}{{.Amount}}</>
 {{end}}`
 
 	return template.Must(template.New(`quotes`).Parse(markup))
@@ -301,13 +302,13 @@ func group(stocks []portfolio.Stock) []portfolio.Stock {
 	current := 0
 
 	for _, stock := range stocks {
-		if stock.GetAdvancing() {
+		if stock.Advancing {
 			grouped[current] = stock
 			current++
 		}
 	}
 	for _, stock := range stocks {
-		if !stock.GetAdvancing() {
+		if !stock.Advancing {
 			grouped[current] = stock
 			current++
 		}
@@ -318,8 +319,8 @@ func group(stocks []portfolio.Stock) []portfolio.Stock {
 
 //-----------------------------------------------------------------------------
 func arrowFor(column int, profile *portfolio.Profile) string {
-	if column == profile.GetSortColumn() {
-		if profile.GetAscending() {
+	if column == profile.SortColumn {
+		if profile.Ascending {
 			return string('\U00002191')
 		}
 		return string('\U00002193')

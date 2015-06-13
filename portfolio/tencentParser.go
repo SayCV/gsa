@@ -18,17 +18,17 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
 	stockCnt := 0
 	
 	log.Debug(fmt.Sprintf("Get body [%d] is ", len(body), body))
-	for i, line := range body { 	
-  	log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
-  	log.Debug("new line2")
+	for _, line := range body { 	
+  	// log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
+  	// log.Debug("new line2")
   	
   	if !strings.Contains(line, `~`) {
-  	  log.Debug(`Lost error data.`)
+  	  // log.Debug(`Lost error data.`)
   	  break
   	}
-  	log.Debug("new line3")
+  	// log.Debug("new line3")
   	if strings.Contains(line, `pv_none_match`) {
-  	  log.Debug(`Get stock code none match.`)
+  	  // log.Debug(`Get stock code none match.`)
   	  break
   	}
   	stockCnt++
@@ -37,28 +37,28 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
 	
 	regex = regexp.MustCompile(`\"(.*)\"`)
 	for i, line := range body { 	
-  	log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
-  	log.Debug("new line2")
+  	// log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
+  	// log.Debug("new line2")
   	
   	if !strings.Contains(line, `~`) {
-  	  log.Debug(`Lost error data.`)
+  	  // log.Debug(`Lost error data.`)
   	  break
   	}
-  	log.Debug("new line3")
+  	// log.Debug("new line3")
   	if strings.Contains(line, `pv_none_match`) {
-  	  log.Debug(`Get stock code none match.`)
+  	  // log.Debug(`Get stock code none match.`)
   	  continue //break
   	}
-  	log.Debug("new line4")
+  	// log.Debug("new line4")
   	matches := regex.FindStringSubmatch(string(line))
   	if len(matches) < 1 { break }
-  	log.Debug(fmt.Sprintf("Get regex [%d] is [%s]", len(matches), matches[1]))
+  	// log.Debug(fmt.Sprintf("Get regex [%d] is [%s]", len(matches), matches[1]))
   	matchesArray := strings.Split(matches[1], `~`)
-  	log.Debug(fmt.Sprintf("Get array [%d] is [%s]", len(matchesArray), matchesArray))
+  	// log.Debug(fmt.Sprintf("Get array [%d] is [%s]", len(matchesArray), matchesArray))
   	if len(matchesArray) < 44 {
 			panic(`Unable to parse ` + string(i))
 		}
-  	log.Debug("new line24")
+  	// log.Debug("new line24")
   	name := matchesArray[1]
     code := matchesArray[2]
     lastPrice, _ := 							strconv.ParseFloat(matchesArray[3], 32)
@@ -73,21 +73,21 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
     amount, _ := 									strconv.ParseFloat(matchesArray[37], 32)
     swing, _ := 									strconv.ParseFloat(matchesArray[43], 32)
     
-    quotes.stocks[i].name = name
-    quotes.stocks[i].code = code
-    quotes.stocks[i].lastPrice = 							float32(lastPrice)
-    quotes.stocks[i].prevPrice = 							float32(prevPrice)
-    quotes.stocks[i].openPrice = 							float32(openPrice)
-    quotes.stocks[i].volume = 								volume
-    quotes.stocks[i].timestamp = 							timestamp
-    quotes.stocks[i].changePrice = 						float32(changePrice)
-    quotes.stocks[i].changePricePct = 	      float32(changePricePct)
-    quotes.stocks[i].highPrice = 							float32(highPrice)
-    quotes.stocks[i].lowPrice = 							float32(lowPrice)
-    quotes.stocks[i].amount = 								float32(amount)
-    quotes.stocks[i].swing = 									float32(swing)
+    quotes.stocks[i].Name = name
+    quotes.stocks[i].Code = code
+    quotes.stocks[i].LastPrice = 							float32(lastPrice)
+    quotes.stocks[i].PrevPrice = 							float32(prevPrice)
+    quotes.stocks[i].OpenPrice = 							float32(openPrice)
+    quotes.stocks[i].Volume = 								volume
+    quotes.stocks[i].Timestamp = 							timestamp
+    quotes.stocks[i].ChangePrice = 						float32(changePrice)
+    quotes.stocks[i].ChangePricePct = 	      float32(changePricePct)
+    quotes.stocks[i].HighPrice = 							float32(highPrice)
+    quotes.stocks[i].LowPrice = 							float32(lowPrice)
+    quotes.stocks[i].Amount = 								float32(amount)
+    quotes.stocks[i].Swing = 									float32(swing)
 	}
-	log.Debug("new line000")
+	// log.Debug("new line000")
 	return quotes
 }
 

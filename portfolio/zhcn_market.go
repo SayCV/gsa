@@ -175,31 +175,31 @@ func (market *ZhcnMarket) extract(snippet []string) *ZhcnMarket {
 		panic(`Unable to get full stock market data ` + ZhcnMarketURL)
 	}
   
-	market.ShangHai[`change`] =           util.Float32ToString(quotes.stocks[0].GetChangePrice())
-	market.ShangHai[`latest`] =           util.Float32ToString(quotes.stocks[0].GetLastPrice())
-	market.ShangHai[`percent`] =          util.Float32ToString(quotes.stocks[0].GetChangePricePct())
+	market.ShangHai[`change`] =           util.Float32ToString(quotes.stocks[0].ChangePrice)
+	market.ShangHai[`latest`] =           util.Float32ToString(quotes.stocks[0].LastPrice)
+	market.ShangHai[`percent`] =          util.Float32ToString(quotes.stocks[0].ChangePricePct)
   market.ShangHai[`advancing`] =        `false`
-  if quotes.stocks[0].GetChangePrice() > 0 { market.ShangHai[`advancing`] = `true` }
+  if quotes.stocks[0].ChangePrice > 0 { market.ShangHai[`advancing`] = `true` }
 
-	market.ShenZhen[`change`] =           util.Float32ToString(quotes.stocks[1].GetChangePrice())
-	market.ShenZhen[`latest`] =           util.Float32ToString(quotes.stocks[1].GetLastPrice())
-	market.ShenZhen[`percent`] =          util.Float32ToString(quotes.stocks[1].GetChangePricePct())
+	market.ShenZhen[`change`] =           util.Float32ToString(quotes.stocks[1].ChangePrice)
+	market.ShenZhen[`latest`] =           util.Float32ToString(quotes.stocks[1].LastPrice)
+	market.ShenZhen[`percent`] =          util.Float32ToString(quotes.stocks[1].ChangePricePct)
 
-	market.SmallPlate[`change`] =         util.Float32ToString(quotes.stocks[2].GetChangePrice())
-	market.SmallPlate[`latest`] =         util.Float32ToString(quotes.stocks[2].GetLastPrice())
-	market.SmallPlate[`percent`] =        util.Float32ToString(quotes.stocks[2].GetChangePricePct())
+	market.SmallPlate[`change`] =         util.Float32ToString(quotes.stocks[2].ChangePrice)
+	market.SmallPlate[`latest`] =         util.Float32ToString(quotes.stocks[2].LastPrice)
+	market.SmallPlate[`percent`] =        util.Float32ToString(quotes.stocks[2].ChangePricePct)
 	
-	market.GrowthEnterprise[`change`] =   util.Float32ToString(quotes.stocks[3].GetChangePrice())
-	market.GrowthEnterprise[`latest`] =   util.Float32ToString(quotes.stocks[3].GetLastPrice())
-	market.GrowthEnterprise[`percent`] =  util.Float32ToString(quotes.stocks[3].GetChangePricePct())
+	market.GrowthEnterprise[`change`] =   util.Float32ToString(quotes.stocks[3].ChangePrice)
+	market.GrowthEnterprise[`latest`] =   util.Float32ToString(quotes.stocks[3].LastPrice)
+	market.GrowthEnterprise[`percent`] =  util.Float32ToString(quotes.stocks[3].ChangePricePct)
 	
-	market.ShangHaiFund[`change`] =       util.Float32ToString(quotes.stocks[4].GetChangePrice())
-	market.ShangHaiFund[`latest`] =       util.Float32ToString(quotes.stocks[4].GetLastPrice())
-	market.ShangHaiFund[`percent`] =      util.Float32ToString(quotes.stocks[4].GetChangePricePct())
+	market.ShangHaiFund[`change`] =       util.Float32ToString(quotes.stocks[4].ChangePrice)
+	market.ShangHaiFund[`latest`] =       util.Float32ToString(quotes.stocks[4].LastPrice)
+	market.ShangHaiFund[`percent`] =      util.Float32ToString(quotes.stocks[4].ChangePricePct)
 	
-	market.HuShen300[`change`] =          util.Float32ToString(quotes.stocks[5].GetChangePrice())
-	market.HuShen300[`latest`] =          util.Float32ToString(quotes.stocks[5].GetLastPrice())
-	market.HuShen300[`percent`] =         util.Float32ToString(quotes.stocks[5].GetChangePricePct())
+	market.HuShen300[`change`] =          util.Float32ToString(quotes.stocks[5].ChangePrice)
+	market.HuShen300[`latest`] =          util.Float32ToString(quotes.stocks[5].LastPrice)
+	market.HuShen300[`percent`] =         util.Float32ToString(quotes.stocks[5].ChangePricePct)
 
 	return market
 }
