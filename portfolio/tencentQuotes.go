@@ -10,6 +10,7 @@ import (
 	`io/ioutil`
 	`net/http`
 	//`reflect`
+	//`strconv`
 	`strings`
   `github.com/SayCV/gsa/log`
 )
@@ -48,6 +49,17 @@ func (quotes *Quotes) GetStocks() []Stock {
   return quotes.stocks
 }
 
+func (quotes *Quotes) GetQueryCode(code string ) string {
+  code = strings.ToLower(code)
+  if strings.HasPrefix(code, `0`) || strings.HasPrefix(code, `3`) {
+    return "sz" + code
+  } else if strings.HasPrefix(code, `IF`) || strings.HasPrefix(code, `sh`) || strings.HasPrefix(code, `sz`) {
+    return code
+  } else {
+    return "sh" + code
+  }
+}
+
 // Fetch the latest stock quotes and parse raw fetched data into array of
 // []Stock structs.
 func (quotes *Quotes) Fetch() (self *Quotes) {
@@ -59,7 +71,12 @@ func (quotes *Quotes) Fetch() (self *Quotes) {
 			}
 		}()
     
-		url := fmt.Sprintf(zhcnQuotesURL, strings.Join(quotes.profile.Tickers, `,`))
+    code := make([]string, len(quotes.profile.Tickers))
+    for i, ticker := range quotes.profile.Tickers {
+      code[i] = quotes.GetQueryCode(ticker)
+    }
+    
+		url := fmt.Sprintf(zhcnQuotesURL, strings.Join(code, `,`))
 		log.Debug(url)
 		
 		response, err := http.Get(url)

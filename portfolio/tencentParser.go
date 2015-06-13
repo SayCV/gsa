@@ -72,6 +72,8 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
     quotes.stocks[i].LowPrice = 							matchesArray[34]
     quotes.stocks[i].Amount = 								matchesArray[37]
     quotes.stocks[i].Swing = 									matchesArray[43]
+    
+    quotes.stocks[i].Advancing = 							quotes.stocks[i].ChangePrice > `0.00`
 	}
 	// log.Debug("new line000")
 	return quotes

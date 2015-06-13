@@ -281,7 +281,7 @@ func buildQuotesTemplate() *template.Template {
 
 
 {{.Header}}
-{{range.Stocks}}{{if .Advancing}}<green>{{end}}{{.Code}}{{.LastPrice}}{{.ChangePrice}}{{.ChangePricePct}}{{.OpenPrice}}{{.LowPrice}}{{.HighPrice}}{{/*.Low52*/}}{{/*.High52*/}}{{.Volume}}{{.AvgPrice}}{{.PeRatio}}{{.Dividend}}{{.DividendYield}}{{.Amount}}</>
+{{range.Stocks}}{{if .Advancing}}<red>{{end}}{{.Code}}{{.LastPrice}}{{.ChangePrice}}{{.ChangePricePct}}{{.OpenPrice}}{{.LowPrice}}{{.HighPrice}}{{/*.Low52*/}}{{/*.High52*/}}{{.Volume}}{{.AvgPrice}}{{.PeRatio}}{{.Dividend}}{{.DividendYield}}{{.Amount}}</>
 {{end}}`
 
 	return template.Must(template.New(`quotes`).Parse(markup))
