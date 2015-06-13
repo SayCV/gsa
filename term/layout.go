@@ -205,9 +205,26 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
     			  mSet := psSet.MethodByName(`Set` + column.name)
     			  log.Debug(`mSet is `, mSet)
     			  if mSet.IsValid() {
-    			    //valueSet := make([]reflect.Value, 1)
+    			    _valueSet := layout.pad(valueGet, column.width)
+    			    log.Debug(`_valueSet is `, _valueSet)
+    			    switch fGet.Kind() {
+              case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+                valueSet, _ := strconv.ParseInt(_valueSet, 10, 64)
+                argsSet := []reflect.Value{reflect.ValueOf(valueSet)}
+                mSet.Call(argsSet)
+              case reflect.Float32:
+                __valueSet, _ := strconv.ParseFloat(_valueSet, 32)
+                valueSet := float32(__valueSet)
+                argsSet := []reflect.Value{reflect.ValueOf(valueSet)}
+                log.Debug(`argsSet is `, argsSet)
+                mSet.Call(argsSet)
+              case reflect.String:
+                valueSet := _valueSet
+                argsSet := []reflect.Value{reflect.ValueOf(valueSet)}
+                mSet.Call(argsSet)
+              // etc...
+              }
     			    //valueSet[0] = reflect.Value(layout.pad(valueGet, column.width))
-    			    //mSet.Call(valueSet)
     			  }
     			}
     		}
