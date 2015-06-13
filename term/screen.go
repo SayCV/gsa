@@ -89,7 +89,7 @@ func (screen *Screen) ClearLine(x int, y int) *Screen {
 // market data, stock quotes, current time, and an arbitrary string.
 func (screen *Screen) Draw(objects ...interface{}) *Screen {
 	if screen.pausedAt != nil {
-		defer screen.DrawLine(0, 0, `<right><r>`+screen.pausedAt.Format(`3:04:05pm PST`)+`</r></right>`)
+		defer screen.DrawLine(0, 0, `<right><r>`+screen.pausedAt.Format(`| 3:04:05pm`)+`</r></right>`)
 	}
 	for _, ptr := range objects {
 		switch ptr.(type) {
@@ -100,7 +100,7 @@ func (screen *Screen) Draw(objects ...interface{}) *Screen {
 			object := ptr.(*portfolio.Quotes)
 			screen.draw(screen.layout.Quotes(object.Fetch()))
 		case time.Time:
-			timestamp := ptr.(time.Time).Format(`3:04:05pm PST`)
+			timestamp := ptr.(time.Time).Format(`| 3:04:05pm`)
 			screen.DrawLine(0, 0, `<right>`+timestamp+`</right>`)
 		default:
 			screen.draw(ptr.(string))

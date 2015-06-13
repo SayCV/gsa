@@ -15,20 +15,50 @@ import (
 func (quotes *Quotes) tencentParser(body []string) *Quotes {
 	
 	var regex *regexp.Regexp
+	stockCnt := 0
 	
-	quotes.stocks = make([]Stock, len(body))
+	log.Debug(fmt.Sprintf("Get body [%d] is ", len(body), body))
+	for i, line := range body { 	
+  	log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
+  	log.Debug("new line2")
+  	
+  	if !strings.Contains(line, `~`) {
+  	  log.Debug(`Lost error data.`)
+  	  break
+  	}
+  	log.Debug("new line3")
+  	if strings.Contains(line, `pv_none_match`) {
+  	  log.Debug(`Get stock code none match.`)
+  	  break
+  	}
+  	stockCnt++
+  }
+	quotes.stocks = make([]Stock, stockCnt)
 	
 	regex = regexp.MustCompile(`\"(.*)\"`)
-	for i, line := range body {
+	for i, line := range body { 	
   	log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
+  	log.Debug("new line2")
   	
+  	if !strings.Contains(line, `~`) {
+  	  log.Debug(`Lost error data.`)
+  	  break
+  	}
+  	log.Debug("new line3")
+  	if strings.Contains(line, `pv_none_match`) {
+  	  log.Debug(`Get stock code none match.`)
+  	  continue //break
+  	}
+  	log.Debug("new line4")
   	matches := regex.FindStringSubmatch(string(line))
-  	log.Debug("Get regex: ", len(matches), matches)
+  	if len(matches) < 1 { break }
+  	log.Debug(fmt.Sprintf("Get regex [%d] is [%s]", len(matches), matches[1]))
   	matchesArray := strings.Split(matches[1], `~`)
+  	log.Debug(fmt.Sprintf("Get array [%d] is [%s]", len(matchesArray), matchesArray))
   	if len(matchesArray) < 44 {
 			panic(`Unable to parse ` + string(i))
 		}
-  	
+  	log.Debug("new line24")
   	name := matchesArray[1]
     code := matchesArray[2]
     lastPrice, _ := 							strconv.ParseFloat(matchesArray[3], 32)
@@ -57,6 +87,7 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
     quotes.stocks[i].amount = 								float32(amount)
     quotes.stocks[i].swing = 									float32(swing)
 	}
+	log.Debug("new line000")
 	return quotes
 }
 

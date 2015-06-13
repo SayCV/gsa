@@ -8,6 +8,7 @@ import (
 	`sort`
 	`strconv`
 	`strings`
+	`github.com/SayCV/gsa/util`
 	`github.com/SayCV/gsa/portfolio`
 )
 
@@ -53,11 +54,6 @@ type byDividendDesc struct{ sortable }
 type byYieldDesc struct{ sortable }
 type byMarketCapDesc struct{ sortable }
 
-func float32ToString(input_num float32) string {
-    // to convert a float number to a string
-    return strconv.FormatFloat(float64(input_num), 'f', 2, 32)
-}
-
 func (list byTickerAsc) Less(i, j int) bool {
 	return list.sortable[i].GetTicker() < list.sortable[j].GetTicker()
 }
@@ -65,10 +61,10 @@ func (list byLastTradeAsc) Less(i, j int) bool {
 	return list.sortable[i].GetLastVolume() < list.sortable[j].GetLastVolume()
 }
 func (list byChangeAsc) Less(i, j int) bool {
-	return c(float32ToString(list.sortable[i].GetChangePrice())) < c(float32ToString(list.sortable[j].GetChangePrice()))
+	return c(util.Float32ToString(list.sortable[i].GetChangePrice())) < c(util.Float32ToString(list.sortable[j].GetChangePrice()))
 }
 func (list byChangePctAsc) Less(i, j int) bool {
-	return c(float32ToString(list.sortable[i].GetChangePricePct())) < c(float32ToString(list.sortable[j].GetChangePricePct()))
+	return c(util.Float32ToString(list.sortable[i].GetChangePricePct())) < c(util.Float32ToString(list.sortable[j].GetChangePricePct()))
 }
 func (list byOpenAsc) Less(i, j int) bool {
 	return list.sortable[i].GetOpenPrice() < list.sortable[j].GetOpenPrice()
@@ -105,10 +101,10 @@ func (list byLastTradeDesc) Less(i, j int) bool {
 	return list.sortable[j].GetLastVolume() < list.sortable[i].GetLastVolume()
 }
 func (list byChangeDesc) Less(i, j int) bool {
-	return c(float32ToString(list.sortable[j].GetChangePrice())) < c(float32ToString(list.sortable[i].GetChangePrice()))
+	return c(util.Float32ToString(list.sortable[j].GetChangePrice())) < c(util.Float32ToString(list.sortable[i].GetChangePrice()))
 }
 func (list byChangePctDesc) Less(i, j int) bool {
-	return c(float32ToString(list.sortable[j].GetChangePricePct())) < c(float32ToString(list.sortable[i].GetChangePricePct()))
+	return c(util.Float32ToString(list.sortable[j].GetChangePricePct())) < c(util.Float32ToString(list.sortable[i].GetChangePricePct()))
 }
 func (list byOpenDesc) Less(i, j int) bool {
 	return list.sortable[j].GetOpenPrice() < list.sortable[i].GetOpenPrice()

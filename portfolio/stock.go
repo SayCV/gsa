@@ -10,6 +10,17 @@ import (
 	//`strings`
 )
 
+const MAX_DEALING_BLOCK = 5
+
+type DealingQuote struct {
+  price             float32
+	quantity					uint64
+}
+
+type Dealing struct {
+  buy             *DealingQuote
+	sell            *DealingQuote
+}
 
 type Stock struct {
 	code				string
@@ -34,26 +45,29 @@ type Stock struct {
 	turnoverRatio		float32
 	volumeRatio			float32
 
-	buyPrice							float32
-	buyQuantity								uint64
-	sellPrice							float32
-	sellQuantity							uint64
-	secondBuyPrice				float32
-	secondBuyQuantity					uint64
-	secondSellPrice				float32
-	secondSellQuantity					uint64
-	thirdBuyPrice					float32
-	thirdBuyQuantity					uint64
-	thirdSellPrice				float32
-	thirdSellQuantity					uint64
-	fourBuyPrice					float32
-	fourBuyQuantity					uint64
-	fourSellPrice				float32
-	fourSellQuantity					uint64
-	fiveBuyPrice					float32
-	fiveBuyQuantity					uint64
-	fiveSellPrice				float32
-	fiveSellQuantity					uint64
+	// buyPrice							float32
+	// buyQuantity								uint64
+	// sellPrice							float32
+	// sellQuantity							uint64
+	// secondBuyPrice				float32
+	// secondBuyQuantity					uint64
+	// secondSellPrice				float32
+	// secondSellQuantity					uint64
+	// thirdBuyPrice					float32
+	// thirdBuyQuantity					uint64
+	// thirdSellPrice				float32
+	// thirdSellQuantity					uint64
+	// fourBuyPrice					float32
+	// fourBuyQuantity					uint64
+	// fourSellPrice				float32
+	// fourSellQuantity					uint64
+	// fiveBuyPrice					float32
+	// fiveBuyQuantity					uint64
+	// fiveSellPrice				float32
+	// fiveSellQuantity					uint64
+	
+	dealing   [MAX_DEALING_BLOCK]Dealing
+	
 	// milliseconds
 	timestamp				uint64
 	
@@ -67,6 +81,24 @@ type Stock struct {
 	errors          string         // Error(s), if any.
 }
 
+// DealingQuote
+func (dealingQuote *DealingQuote) GetPrice() float32 {
+  return dealingQuote.price
+}
+
+func (dealingQuote *DealingQuote) GetQuantity() uint64 {
+  return dealingQuote.quantity
+}
+
+func (dealingQuote *DealingQuote) SetPrice(price float32) {
+  dealingQuote.price = price
+}
+
+func (dealingQuote *DealingQuote) SetQuantity(quantity uint64) {
+  dealingQuote.quantity = quantity
+}
+
+// Stock
 func (stock *Stock) GetCode() string {
   return stock.code
 }
@@ -145,30 +177,6 @@ func (stock *Stock) GetTurnoverRatio() float32 {
 	
 func (stock *Stock) GetVolumeRatio() float32 {
   return stock.volumeRatio
-}
-
-	//buyPrice							float32
-	//buyQuantity								uint64
-	//sellPrice							float32
-	//sellQuantity							uint64
-	//secondBuyPrice				float32
-	//secondBuyQuantity					uint64
-	//secondSellPrice				float32
-	//secondSellQuantity					uint64
-	//thirdBuyPrice					float32
-	//thirdBuyQuantity					uint64
-	//thirdSellPrice				float32
-	//thirdSellQuantity					uint64
-	//fourBuyPrice					float32
-	//fourBuyQuantity					uint64
-	//fourSellPrice				float32
-	//fourSellQuantity					uint64
-	//fiveBuyPrice					float32
-	//fiveBuyQuantity					uint64
-	//fiveSellPrice				float32
-
-func (stock *Stock) GetFiveSellQuantity() uint64 {
-  return stock.fiveSellQuantity
 }
 
 func (stock *Stock) GetTimestamp() uint64 {
@@ -274,30 +282,6 @@ func (stock *Stock) SetTurnoverRatio(turnoverRatio float32) {
 	
 func (stock *Stock) SetVolumeRatio(volumeRatio float32) {
   stock.volumeRatio = volumeRatio
-}
-
-	//buyPrice							float32
-	//buyQuantity								uint64
-	//sellPrice							float32
-	//sellQuantity							uint64
-	//secondBuyPrice				float32
-	//secondBuyQuantity					uint64
-	//secondSellPrice				float32
-	//secondSellQuantity					uint64
-	//thirdBuyPrice					float32
-	//thirdBuyQuantity					uint64
-	//thirdSellPrice				float32
-	//thirdSellQuantity					uint64
-	//fourBuyPrice					float32
-	//fourBuyQuantity					uint64
-	//fourSellPrice				float32
-	//fourSellQuantity					uint64
-	//fiveBuyPrice					float32
-	//fiveBuyQuantity					uint64
-	//fiveSellPrice				float32
-
-func (stock *Stock) SetFiveSellQuantity(fiveSellQuantity uint64) {
-  stock.fiveSellQuantity = fiveSellQuantity
 }
 
 func (stock *Stock) SetTimestamp(timestamp uint64) {

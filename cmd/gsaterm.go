@@ -128,9 +128,9 @@ func main() {
   // flag.Parse()
 	p, err := os.Getwd()  
   if err != nil {  
-    log.Debug("Getwd: ", err)  
+    log.Debug("Current Dir: ", err)  
   } else {  
-    log.Debug("Getwd: ", p)  
+    log.Debug("Current Dir: ", p)  
   }
 
 	screen := term.NewScreen()
@@ -139,5 +139,5 @@ func main() {
 	profile := portfolio.NewProfile()
 	mainLoop(screen, profile)
 	
-	// log.Flush()
+	log.Close()
 }

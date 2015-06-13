@@ -70,8 +70,8 @@ func (layout *Layout) Market(market *portfolio.ZhcnMarket) string {
 
 	highlight(
 	  market.ShangHai, market.ShenZhen, market.GrowthEnterprise,
-	  market.ShangHaiFund, market.ShenZhenFund,
-	  market.Dow, market.Sp500, market.Nasdaq, market.HongKong)
+	  market.ShangHaiFund, market.ShenZhenFund)
+	  //market.Dow, market.Sp500, market.Nasdaq, market.HongKong)
 	
 	buffer := new(bytes.Buffer)
 	layout.marketTemplate.Execute(buffer, market)
@@ -92,7 +92,7 @@ func (layout *Layout) Quotes(quotes *portfolio.Quotes) string {
 		Header string  // Formatted header line.
 		Stocks []portfolio.Stock // List of formatted stock quotes.
 	}{
-		time.Now().Format(`3:04:05pm PST`),
+		time.Now().Format(`| 3:04:05pm`),
 		layout.Header(quotes.GetProfile()),
 		layout.prettify(quotes),
 	}
@@ -187,7 +187,8 @@ func (layout *Layout) pad(str string, width int) string {
 
 //-----------------------------------------------------------------------------
 func buildMarketTemplate() *template.Template {
-	markup := `<yellow>Dow</> {{.Dow.change}} ({{.Dow.percent}}) at {{.Dow.latest}} <yellow>S&P 500</> {{.Sp500.change}} ({{.Sp500.percent}}) at {{.Sp500.latest}} <yellow>NASDAQ</> {{.Nasdaq.change}} ({{.Nasdaq.percent}}) at {{.Nasdaq.latest}}
+	markup := `{{if .ShangHai.advancing}}<red>{{end}}ShangHai</> {{.ShangHai.change}} ({{.ShangHai.percent}}) at {{.ShangHai.latest}} <yellow>ShenZhen</> {{.ShenZhen.change}} ({{.ShenZhen.percent}}) at {{.ShenZhen.latest}}
+<yellow>GEI</> {{.GrowthEnterprise.change}} ({{.GrowthEnterprise.percent}}) at {{.GrowthEnterprise.latest}}
 <yellow>Tokyo</> {{.Tokyo.change}} ({{.Tokyo.percent}}) at {{.Tokyo.latest}} <yellow>HK</> {{.HongKong.change}} ({{.HongKong.percent}}) at {{.HongKong.latest}} <yellow>London</> {{.London.change}} ({{.London.percent}}) at {{.London.latest}} <yellow>Frankfurt</> {{.Frankfurt.change}} ({{.Frankfurt.percent}}) at {{.Frankfurt.latest}} {{if .IsClosed}}<right>U.S. markets closed</right>{{end}}
 <yellow>10-Year Yield</> {{.Yield.latest}}% ({{.Yield.change}}) <yellow>Euro</> ${{.Euro.latest}} ({{.Euro.change}}%) <yellow>Yen</> ¥{{.Yen.latest}} ({{.Yen.change}}%) <yellow>Oil</> ${{.Oil.latest}} ({{.Oil.change}}%) <yellow>Gold</> ${{.Gold.latest}} ({{.Gold.change}}%)`
 

@@ -38,6 +38,10 @@ func Init() {
 	}
 }
 
+func Close() {
+	glog.Flush()
+}
+
 func callerAndLevelInfo(level glog.Level, args []interface{}) []interface{} {
 	if int32(level) >= int32(len(levelName)) {
 		level = glog.Level(len(levelName) - 1)

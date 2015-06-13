@@ -13,6 +13,7 @@ import (
 	`strings`
 	//`encoding/json`
 	`github.com/SayCV/gsa/log`
+	`github.com/SayCV/gsa/util`
 	//`github.com/SayCV/gsa/portfolio`
 )
 
@@ -91,9 +92,12 @@ func NewMarket() *ZhcnMarket {
 }
 
 func (market *ZhcnMarket) getUrl() (string) {
-  codes := fmt.Sprintf(`%s,%s`,
+  codes := fmt.Sprintf(`%s,%s,%s,%s,%s`,
     ZhcnMarketCodes[`ShangHai`],
-    ZhcnMarketCodes[`ShenZhen`])
+    ZhcnMarketCodes[`ShenZhen`],
+    ZhcnMarketCodes[`GrowthEnterprise`],
+    ZhcnMarketCodes[`ShangHaiFund`],
+    ZhcnMarketCodes[`ShenZhenFund`])
   url := fmt.Sprintf(ZhcnMarketURL, codes)
   
   log.Debug(url)
@@ -156,33 +160,36 @@ func (market *ZhcnMarket) trim(body []byte) []byte {
 //-----------------------------------------------------------------------------
 func (market *ZhcnMarket) extract(snippet []string) *ZhcnMarket {
 	// matches := market.regex.FindStringSubmatch(string(snippet))
-	var matches []string
-	
-	//portfolio.Stock
-
-	if len(matches) < 44 {
-		panic(`Unable to parse ` + ZhcnMarketURL)
+	// var matches []string
+	quotes := NewQuotes(nil, nil)
+  
+	quotes.tencentParser(snippet)
+  log.Debug(fmt.Sprintf("Get quotes.stocks size [%d], but call size [%d]", len(quotes.stocks), len(ZhcnMarketCodes)))
+	if len(quotes.stocks) < len(ZhcnMarketCodes) {
+		panic(`Unable to get full stock market data ` + ZhcnMarketURL)
 	}
+  
+	market.ShangHai[`change`] =           util.Float32ToString(quotes.stocks[0].GetChangePrice())
+	market.ShangHai[`latest`] =           util.Float32ToString(quotes.stocks[0].GetLastPrice())
+	market.ShangHai[`percent`] =          util.Float32ToString(quotes.stocks[0].GetChangePricePct())
+  market.ShangHai[`advancing`] =        `false`
+  if quotes.stocks[0].GetChangePrice() > 0 { market.ShangHai[`advancing`] = `true` }
 
-	market.ShangHai[`change`] = matches[1]
-	market.ShangHai[`latest`] = matches[2]
-	market.ShangHai[`percent`] = matches[3]
+	market.ShenZhen[`change`] =           util.Float32ToString(quotes.stocks[1].GetChangePrice())
+	market.ShenZhen[`latest`] =           util.Float32ToString(quotes.stocks[1].GetLastPrice())
+	market.ShenZhen[`percent`] =          util.Float32ToString(quotes.stocks[1].GetChangePricePct())
 
-	market.ShenZhen[`change`] = matches[4]
-	market.ShenZhen[`latest`] = matches[5]
-	market.ShenZhen[`percent`] = matches[6]
-
-	market.GrowthEnterprise[`change`] = matches[7]
-	market.GrowthEnterprise[`latest`] = matches[8]
-	market.GrowthEnterprise[`percent`] = matches[9]
+	market.GrowthEnterprise[`change`] =   util.Float32ToString(quotes.stocks[2].GetChangePrice())
+	market.GrowthEnterprise[`latest`] =   util.Float32ToString(quotes.stocks[2].GetLastPrice())
+	market.GrowthEnterprise[`percent`] =  util.Float32ToString(quotes.stocks[2].GetChangePricePct())
 	
-	market.ShangHaiFund[`change`] = matches[7]
-	market.ShangHaiFund[`latest`] = matches[8]
-	market.ShangHaiFund[`percent`] = matches[9]
+	market.ShangHaiFund[`change`] =       util.Float32ToString(quotes.stocks[3].GetChangePrice())
+	market.ShangHaiFund[`latest`] =       util.Float32ToString(quotes.stocks[3].GetLastPrice())
+	market.ShangHaiFund[`percent`] =      util.Float32ToString(quotes.stocks[3].GetChangePricePct())
 	
-	market.ShenZhenFund[`change`] = matches[7]
-	market.ShenZhenFund[`latest`] = matches[8]
-	market.ShenZhenFund[`percent`] = matches[9]
+	market.ShenZhenFund[`change`] =       util.Float32ToString(quotes.stocks[4].GetChangePrice())
+	market.ShenZhenFund[`latest`] =       util.Float32ToString(quotes.stocks[4].GetLastPrice())
+	market.ShenZhenFund[`percent`] =      util.Float32ToString(quotes.stocks[4].GetChangePricePct())
 
 	return market
 }
