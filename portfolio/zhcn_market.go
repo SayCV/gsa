@@ -194,11 +194,11 @@ func (market *ZhcnMarket) extract(snippet []string) *ZhcnMarket {
 	market.GrowthEnterprise[`percent`] =  util.Float32ToString(quotes.stocks[3].GetChangePricePct())
 	
 	market.ShangHaiFund[`change`] =       util.Float32ToString(quotes.stocks[4].GetChangePrice())
-	market.ShangHaiFund[`latest`] =       util.Float32ToStringM(quotes.stocks[4].GetLastPrice(), 0)
+	market.ShangHaiFund[`latest`] =       util.Float32ToString(quotes.stocks[4].GetLastPrice())
 	market.ShangHaiFund[`percent`] =      util.Float32ToString(quotes.stocks[4].GetChangePricePct())
 	
 	market.HuShen300[`change`] =          util.Float32ToString(quotes.stocks[5].GetChangePrice())
-	market.HuShen300[`latest`] =          util.Float32ToStringM(quotes.stocks[5].GetLastPrice(), 0)
+	market.HuShen300[`latest`] =          util.Float32ToString(quotes.stocks[5].GetLastPrice())
 	market.HuShen300[`percent`] =         util.Float32ToString(quotes.stocks[5].GetChangePricePct())
 
 	return market

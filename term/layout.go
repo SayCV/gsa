@@ -188,9 +188,9 @@ func (layout *Layout) pad(str string, width int) string {
 
 //-----------------------------------------------------------------------------
 func buildMarketTemplate() *template.Template {
-	markup := `{{if .ShangHai.advancing}}<red>SH{{end}}</> {{.ShangHai.change}} ({{.ShangHai.percent}}) at {{.ShangHai.latest}} <yellow>SZ</> {{.ShenZhen.change}} ({{.ShenZhen.percent}}) at {{.ShenZhen.latest}}
-<yellow>SPI</> {{.SmallPlate.change}} ({{.SmallPlate.percent}}) at {{.SmallPlate.latest}}  <yellow>GEI</> {{.GrowthEnterprise.change}} ({{.GrowthEnterprise.percent}}) at {{.GrowthEnterprise.latest}} 
-<yellow>SHFI</> {{.ShangHaiFund.change}} ({{.ShangHaiFund.percent}}) at {{.ShangHaiFund.latest}} <yellow>HS300</> {{.HuShen300.change}} ({{.HuShen300.percent}}) at {{.HuShen300.latest}})`
+	markup := `{{if .ShangHai.advancing}}<red>SH   {{end}}</> {{.ShangHai.change}} ({{.ShangHai.percent}}) at  {{.ShangHai.latest}} <yellow>SZ   </> {{.ShenZhen.change}} ({{.ShenZhen.percent}}) at {{.ShenZhen.latest}}
+<yellow>SPI  </> {{.SmallPlate.change}} ({{.SmallPlate.percent}}) at {{.SmallPlate.latest}} <yellow>GEI  </> {{.GrowthEnterprise.change}} ({{.GrowthEnterprise.percent}}) at {{.GrowthEnterprise.latest}}
+<yellow>SHFI </> {{.ShangHaiFund.change}} ({{.ShangHaiFund.percent}}) at  {{.ShangHaiFund.latest}} <yellow>HS300</> {{.HuShen300.change}} ({{.HuShen300.percent}}) at {{.HuShen300.latest}})`
 
 	return template.Must(template.New(`market`).Parse(markup))
 }
