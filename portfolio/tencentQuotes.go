@@ -11,7 +11,7 @@ import (
 	`net/http`
 	//`reflect`
 	`strings`
-	//`github.com/SayCV/gsa/term`
+  `github.com/SayCV/gsa/log`
 )
 
 // See http://www.gummy-stuff.org/Yahoo-stocks.htm
@@ -59,7 +59,9 @@ func (quotes *Quotes) Fetch() (self *Quotes) {
 			}
 		}()
     
-		url := fmt.Sprintf(zhcnQuotesURL, strings.Join(quotes.profile.Tickers, `+`))
+		url := fmt.Sprintf(zhcnQuotesURL, strings.Join(quotes.profile.Tickers, `,`))
+		log.Debug(url)
+		
 		response, err := http.Get(url)
 		if err != nil {
 			panic(err)

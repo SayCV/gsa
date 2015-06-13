@@ -9,10 +9,20 @@ import (
 	`io/ioutil`
 	`os/user`
 	`sort`
+	//`github.com/SayCV/gsa/log`
 )
 
 // File name in user's home directory where we store the settings.
 const gsarc = `/.gsarc`
+
+var ZhcnDrogueCodes = map[string]string{
+  `ZXZQ`         : `sh600030`,
+  `ZGPA`         : `sh601318`,
+  `ZGYH`         : `sh601988`,
+  `ZGSY`         : `sh601857`,
+  `ZGSH`         : `sh600028`,
+  `SZWK`         : `sz000002`,
+}
 
 // Profile manages Mop program settings as defined by user (ex. list of
 // stock tickers). The settings are serialized using JSON and saved in
@@ -36,7 +46,16 @@ func NewProfile() *Profile {
 		profile.MarketRefresh = 12 // Market data gets fetched every 12s (5 times per minute).
 		profile.QuotesRefresh = 5  // Stock quotes get updated every 5s (12 times per minute).
 		profile.Grouped = false    // Stock quotes are *not* grouped by advancing/declining.
-		profile.Tickers = []string{`AAPL`, `C`, `GOOG`, `IBM`, `KO`, `ORCL`, `V`}
+		// 
+		profile.Tickers = []string{
+		  ZhcnDrogueCodes[`ZXZQ`],
+		  ZhcnDrogueCodes[`ZGPA`],
+		  ZhcnDrogueCodes[`ZGYH`],
+		  ZhcnDrogueCodes[`ZGSY`],
+		  ZhcnDrogueCodes[`ZGSH`],
+		  ZhcnDrogueCodes[`SZWK`],
+		}
+		//log.Debug("Init profile.Tickers len is ", len(profile.Tickers))
 		profile.SortColumn = 0   // Stock quotes are sorted by ticker name.
 		profile.Ascending = true // A to Z.
 		profile.Save()

@@ -9,9 +9,11 @@ import (
 	`fmt`
 	`reflect`
 	`regexp`
+	`strconv`
 	`strings`
 	`text/template`
 	`time`
+	`github.com/SayCV/gsa/log`
 	`github.com/SayCV/gsa/portfolio`
 )
 
@@ -38,21 +40,21 @@ type Layout struct {
 func NewLayout() *Layout {
 	layout := &Layout{}
 	layout.columns = []Column{
-		{-7, `Ticker`, `Ticker`, nil},
-		{10, `LastTrade`, `Last`, currency},
-		{10, `Change`, `Change`, currency},
-		{10, `ChangePct`, `Change%`, last},
-		{10, `Open`, `Open`, currency},
-		{10, `Low`, `Low`, currency},
-		{10, `High`, `High`, currency},
-		{10, `Low52`, `52w Low`, currency},
-		{10, `High52`, `52w High`, currency},
+		{-7, `Code`, `Ticker`, nil},
+		{10, `LastPrice`, `Last`, currency},
+		{10, `ChangePrice`, `Change`, currency},
+		{10, `ChangePricePct`, `Change%`, last},
+		{10, `OpenPrice`, `Open`, currency},
+		{10, `LowPrice`, `Low`, currency},
+		{10, `HighPrice`, `High`, currency},
+		//{10, `Low52`, `52w Low`, currency},
+		//{10, `High52`, `52w High`, currency},
 		{11, `Volume`, `Volume`, nil},
-		{11, `AvgVolume`, `AvgVolume`, nil},
+		{11, `AvgPrice`, `AvgPrice`, nil},
 		{9, `PeRatio`, `P/E`, blank},
 		{9, `Dividend`, `Dividend`, zero},
-		{9, `Yield`, `Yield`, percent},
-		{11, `MarketCap`, `MktCap`, currency},
+		{9, `DividendYield`, `Yield`, percent},
+		{11, `Amount`, `Amount`, currency},
 	}
 	layout.regex = regexp.MustCompile(`(\.\d+)[BMK]?$`)
 	layout.marketTemplate = buildMarketTemplate()
@@ -132,6 +134,7 @@ func (layout *Layout) TotalColumns() int {
 //-----------------------------------------------------------------------------
 func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
 	pretty := make([]portfolio.Stock, len(quotes.GetStocks()))
+	log.Debug("len(quotes.GetStocks()) is ", len(quotes.GetStocks()))
 	//
 	// Iterate over the list of stocks and properly format all its columns.
 	//
@@ -145,13 +148,59 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
 		//
 		for _, column := range layout.columns {
 			// ex. value = stock.Change
-			value := reflect.ValueOf(&stock).Elem().FieldByName(column.name).String()
-			if column.formatter != nil {
-				// ex. value = currency(value)
-				value = column.formatter(value)
-			}
-			// ex. pretty[i].Change = layout.pad(value, 10)
-			reflect.ValueOf(&pretty[i]).Elem().FieldByName(column.name).SetString(layout.pad(value, column.width))
+			
+			psGet := reflect.ValueOf(&stock) // pointer to struct - addressable
+      sGet := psGet.Elem() // struct
+      log.Debug("Elem is ", sGet)
+      if sGet.Kind() == reflect.Struct {
+        // exported field
+        // f := s.FieldByName(column.name)
+        // if f.IsValid() {
+        // A Value can be changed only if it is 
+        // addressable and was not obtained by 
+        // the use of unexported struct fields.
+        // if f.CanSet() {
+        // change value of N
+        // if f.Kind() == reflect.Int {
+        // if !f.OverflowInt(x) {
+        //   f.SetInt(x)
+        // }
+        fGet := sGet.FieldByName(strings.ToLower(strconv.Itoa(int(column.name[0]))) + column.name[1:])
+        log.Debug("sGet.FieldByName is ", sGet.FieldByName(strings.ToLower(strconv.Itoa(int(column.name[0]))) + column.name[1:]))
+			  mGet := psGet.MethodByName(`Get` + column.name)
+			  log.Debug(`mGet is `, mGet)
+			  if mGet.IsValid() {
+			    valueGetArray := mGet.Call([]reflect.Value{})
+			    log.Debug("fGet is ", fGet)
+			    log.Debug("fGet.Kind is ", fGet.Kind())
+			    valueGet := valueGetArray[0].String()
+			    log.Debug("valueGetArray is ", valueGetArray)
+			    log.Debug("valueGet is ", valueGet, " orig is ", valueGetArray[0])
+			    //log.Debug("valueGet.Kind is ", valueGet.Kind())
+			    if column.formatter != nil {
+				    // ex. value = currency(valueGet)
+				    valueGet = column.formatter(valueGet)
+			    }
+    			// ex. pretty[i].Change = layout.pad(valueGet, 10)
+    			log.Debug("layout.pad is ", layout.pad(valueGet, column.width))
+    			log.Debug("column.name is ", column.name)
+    			log.Debug("Elem is ", reflect.ValueOf(&pretty[i]).Elem())
+    			log.Debug("FieldByName is ", reflect.ValueOf(&pretty[i]).Elem().FieldByName(column.name))
+    			//reflect.ValueOf(&pretty[i]).Elem().FieldByName(column.name).SetString(layout.pad(valueGet, column.width))
+    			psSet := reflect.ValueOf(&pretty[i]) // pointer to struct - addressable
+          sSet := psSet.Elem() // struct
+          log.Debug("Elem is ", sSet)
+          if sSet.Kind() == reflect.Struct {
+    			  mSet := psSet.MethodByName(`Set` + column.name)
+    			  log.Debug(`mSet is `, mSet)
+    			  if mSet.IsValid() {
+    			    //valueSet := make([]reflect.Value, 1)
+    			    //valueSet[0] = reflect.Value(layout.pad(valueGet, column.width))
+    			    //mSet.Call(valueSet)
+    			  }
+    			}
+    		}
+    	}
 		}
 	}
 
