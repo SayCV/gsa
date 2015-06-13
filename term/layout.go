@@ -14,6 +14,7 @@ import (
 	`text/template`
 	`time`
 	`github.com/SayCV/gsa/log`
+	//`github.com/SayCV/gsa/util`
 	`github.com/SayCV/gsa/portfolio`
 )
 
@@ -165,15 +166,25 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
         // if !f.OverflowInt(x) {
         //   f.SetInt(x)
         // }
-        fGet := sGet.FieldByName(strings.ToLower(strconv.Itoa(int(column.name[0]))) + column.name[1:])
-        log.Debug("sGet.FieldByName is ", sGet.FieldByName(strings.ToLower(strconv.Itoa(int(column.name[0]))) + column.name[1:]))
+        fGet := sGet.FieldByName(strings.ToLower(string(column.name[0])) + column.name[1:])
+        log.Debug("sGet.FieldByName is ", strings.ToLower(string(column.name[0])) + column.name[1:])
 			  mGet := psGet.MethodByName(`Get` + column.name)
 			  log.Debug(`mGet is `, mGet)
+			  var valueGet string
 			  if mGet.IsValid() {
 			    valueGetArray := mGet.Call([]reflect.Value{})
 			    log.Debug("fGet is ", fGet)
 			    log.Debug("fGet.Kind is ", fGet.Kind())
-			    valueGet := valueGetArray[0].String()
+			    switch fGet.Kind() {
+          case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+            valueGet = strconv.FormatInt(valueGetArray[0].Int(), 10)
+          case reflect.Float32:
+            valueGet = strconv.FormatFloat(valueGetArray[0].Float(), 'f', 2, 32)
+            //_valueGet = float32(__valueGet)
+          case reflect.String:
+            valueGet = valueGetArray[0].String()
+          // etc...
+          }
 			    log.Debug("valueGetArray is ", valueGetArray)
 			    log.Debug("valueGet is ", valueGet, " orig is ", valueGetArray[0])
 			    //log.Debug("valueGet.Kind is ", valueGet.Kind())
