@@ -17,7 +17,7 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
 	var regex *regexp.Regexp
 	stockCnt := 0
 	
-	log.Debug(fmt.Sprintf("Get body [%d] is ", len(body), body))
+	//log.Debug(fmt.Sprintf("Get body [%d] is ", len(body), body))
 	for _, line := range body { 	
   	// log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
   	// log.Debug("new line2")
@@ -37,7 +37,7 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
 	
 	regex = regexp.MustCompile(`\"(.*)\"`)
 	for i, line := range body { 	
-  	// log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
+  	log.Debug(fmt.Sprintf("Get line [%d] is [%s]", i, line))
   	// log.Debug("new line2")
   	
   	if !strings.Contains(line, `~`) {

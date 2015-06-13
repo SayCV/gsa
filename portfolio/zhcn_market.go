@@ -170,7 +170,7 @@ func (market *ZhcnMarket) extract(snippet []string) *ZhcnMarket {
 	quotes := NewQuotes(nil, nil)
   
 	quotes.tencentParser(snippet)
-  log.Debug(fmt.Sprintf("Get quotes.stocks size [%d], but call size [%d]", len(quotes.stocks), len(ZhcnMarketCodes)))
+  //log.Debug(fmt.Sprintf("Get quotes.stocks size [%d], but call size [%d]", len(quotes.stocks), len(ZhcnMarketCodes)))
 	if len(quotes.stocks) < len(ZhcnMarketCodes) {
 		panic(`Unable to get full stock market data ` + ZhcnMarketURL)
 	}
