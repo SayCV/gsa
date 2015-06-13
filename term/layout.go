@@ -223,14 +223,14 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
         fSet.SetInt(valueSet)
       case reflect.Float32, reflect.Float64:
         valueSet, _ := strconv.ParseFloat(valueGet, 32)
-        log.Debug(`valueSet [float] is `, valueGet)
+        log.Debug(`valueSet [float] is `, valueSet)
         fSet.SetFloat(valueSet)
+        log.Debug(`fSet [final] is `, strconv.FormatFloat(fSet.Float(), 'f', 2, 32))
       case reflect.String:
         log.Debug(`valueSet [string] is `, valueGet)
         fSet.SetString(valueGet)
       // etc...
       }
-      log.Debug(`fSet [final] is `, fSet)
 		}
 	}
 

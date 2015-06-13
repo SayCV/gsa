@@ -8,7 +8,7 @@ import (
 	`sort`
 	`strconv`
 	`strings`
-	`github.com/SayCV/gsa/util`
+	//`github.com/SayCV/gsa/util`
 	`github.com/SayCV/gsa/portfolio`
 )
 
@@ -58,13 +58,13 @@ func (list byTickerAsc) Less(i, j int) bool {
 	return list.sortable[i].Code < list.sortable[j].Code
 }
 func (list byLastTradeAsc) Less(i, j int) bool {
-	return list.sortable[i].LastVolume < list.sortable[j].LastVolume
+	return list.sortable[i].LastPrice < list.sortable[j].LastPrice
 }
 func (list byChangeAsc) Less(i, j int) bool {
-	return c(util.Float32ToString(list.sortable[i].ChangePrice)) < c(util.Float32ToString(list.sortable[j].ChangePrice))
+	return c(list.sortable[i].ChangePrice) < c(list.sortable[j].ChangePrice)
 }
 func (list byChangePctAsc) Less(i, j int) bool {
-	return c(util.Float32ToString(list.sortable[i].ChangePricePct)) < c(util.Float32ToString(list.sortable[j].ChangePricePct))
+	return c(list.sortable[i].ChangePricePct) < c(list.sortable[j].ChangePricePct)
 }
 func (list byOpenAsc) Less(i, j int) bool {
 	return list.sortable[i].OpenPrice < list.sortable[j].OpenPrice
@@ -98,13 +98,13 @@ func (list byTickerDesc) Less(i, j int) bool {
 	return list.sortable[j].Code < list.sortable[i].Code
 }
 func (list byLastTradeDesc) Less(i, j int) bool {
-	return list.sortable[j].LastVolume < list.sortable[i].LastVolume
+	return list.sortable[j].LastPrice < list.sortable[i].LastPrice
 }
 func (list byChangeDesc) Less(i, j int) bool {
-	return c(util.Float32ToString(list.sortable[j].ChangePrice)) < c(util.Float32ToString(list.sortable[i].ChangePrice))
+	return c(list.sortable[j].ChangePrice) < c(list.sortable[i].ChangePrice)
 }
 func (list byChangePctDesc) Less(i, j int) bool {
-	return c(util.Float32ToString(list.sortable[j].ChangePricePct)) < c(util.Float32ToString(list.sortable[i].ChangePricePct))
+	return c(list.sortable[j].ChangePricePct) < c(list.sortable[i].ChangePricePct)
 }
 func (list byOpenDesc) Less(i, j int) bool {
 	return list.sortable[j].OpenPrice < list.sortable[i].OpenPrice

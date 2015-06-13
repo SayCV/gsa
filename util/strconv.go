@@ -6,7 +6,16 @@ package util
 
 import (
 	`strconv`
+	`strings`
 )
+
+// The same exact method is used to sort by $Change and Change%. In both cases
+// we sort by the value of Change% so that multiple $0.00s get sorted proferly.
+func ChangeToFloat32(str string) float32 {
+	trimmed := strings.Replace(strings.Trim(str, ` %`), `$`, ``, 1)
+	value, _ := strconv.ParseFloat(trimmed, 32)
+	return float32(value)
+}
 
 func Float32ToString(input_num float32) string {
     // to convert a float number to a string

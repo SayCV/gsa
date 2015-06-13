@@ -6,7 +6,7 @@ package portfolio
 
 import (
 	`fmt`
-	`strconv`
+	//`strconv`
 	`regexp`
 	`strings`
 	`github.com/SayCV/gsa/log`
@@ -59,33 +59,19 @@ func (quotes *Quotes) tencentParser(body []string) *Quotes {
 			panic(`Unable to parse ` + string(i))
 		}
   	// log.Debug("new line24")
-  	name := matchesArray[1]
-    code := matchesArray[2]
-    lastPrice, _ := 							strconv.ParseFloat(matchesArray[3], 32)
-    prevPrice, _ := 							strconv.ParseFloat(matchesArray[4], 32)
-    openPrice, _ := 							strconv.ParseFloat(matchesArray[5], 32)
-    volume, _ := 									strconv.ParseUint(matchesArray[6], 10, 64)
-    timestamp, _ := 							strconv.ParseUint(matchesArray[30], 10, 64)
-    changePrice, _ := 						strconv.ParseFloat(matchesArray[31], 32)
-    changePricePct, _ := 	        strconv.ParseFloat(matchesArray[32], 32)
-    highPrice, _ := 							strconv.ParseFloat(matchesArray[33], 32)
-    lowPrice, _ := 								strconv.ParseFloat(matchesArray[34], 32)
-    amount, _ := 									strconv.ParseFloat(matchesArray[37], 32)
-    swing, _ := 									strconv.ParseFloat(matchesArray[43], 32)
-    
-    quotes.stocks[i].Name = name
-    quotes.stocks[i].Code = code
-    quotes.stocks[i].LastPrice = 							float32(lastPrice)
-    quotes.stocks[i].PrevPrice = 							float32(prevPrice)
-    quotes.stocks[i].OpenPrice = 							float32(openPrice)
-    quotes.stocks[i].Volume = 								volume
-    quotes.stocks[i].Timestamp = 							timestamp
-    quotes.stocks[i].ChangePrice = 						float32(changePrice)
-    quotes.stocks[i].ChangePricePct = 	      float32(changePricePct)
-    quotes.stocks[i].HighPrice = 							float32(highPrice)
-    quotes.stocks[i].LowPrice = 							float32(lowPrice)
-    quotes.stocks[i].Amount = 								float32(amount)
-    quotes.stocks[i].Swing = 									float32(swing)
+    quotes.stocks[i].Name =                   matchesArray[1]
+    quotes.stocks[i].Code =                   matchesArray[2]
+    quotes.stocks[i].LastPrice = 							matchesArray[3]
+    quotes.stocks[i].PrevPrice = 							matchesArray[4]
+    quotes.stocks[i].OpenPrice = 							matchesArray[5]
+    quotes.stocks[i].Volume = 								matchesArray[6]
+    quotes.stocks[i].Timestamp = 							matchesArray[30]
+    quotes.stocks[i].ChangePrice = 						matchesArray[31]
+    quotes.stocks[i].ChangePricePct = 	      matchesArray[32]
+    quotes.stocks[i].HighPrice = 							matchesArray[33]
+    quotes.stocks[i].LowPrice = 							matchesArray[34]
+    quotes.stocks[i].Amount = 								matchesArray[37]
+    quotes.stocks[i].Swing = 									matchesArray[43]
 	}
 	// log.Debug("new line000")
 	return quotes
