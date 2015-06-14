@@ -5,7 +5,7 @@
 package portfolio
 
 import (
-	`bytes`
+	//`bytes`
 	`fmt`
 	`io/ioutil`
 	`net/http`
@@ -27,7 +27,7 @@ type BigBillQuotes struct {
 }
 
 // Sets the initial values and returns new Quotes struct.
-func NewBigBillQuotes(market *ZhcnMarket, profile *Profile) *Quotes {
+func NewBigBillQuotes(market *ZhcnMarket, profile *Profile) *BigBillQuotes {
 	return &BigBillQuotes{
 		market:  market,
 		profile: profile,
@@ -100,4 +100,15 @@ func (quotes *BigBillQuotes) Ok() (bool, string) {
 	return quotes.errors == ``, quotes.errors
 }
 
+// isReady returns true if we haven't fetched the quotes yet *or* the stock
+// market is still open and we might want to grab the latest quotes. In both
+// cases we make sure the list of requested tickers is not empty.
+func (quotes *BigBillQuotes) isReady() bool {
+	return (quotes.stocks == nil || !quotes.market.IsClosed) && len(quotes.profile.Tickers) > 0
+}
 
+// Use reflection to parse and assign the quotes data fetched using the Yahoo
+// market API.
+func (quotes *BigBillQuotes) parse(body []string) *BigBillQuotes {
+	return quotes.tencentParser(body)
+}
