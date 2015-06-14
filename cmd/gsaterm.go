@@ -121,7 +121,7 @@ loop:
 //-----------------------------------------------------------------------------
 func main() {
   
-  //os.Setenv(`LOG_LEVEL`, `3`)
+  os.Setenv(`LOG_LEVEL`, `3`)
   os.Setenv(`LOG_TO_STDERR`, `true`)
   os.Setenv(`LOG_FILE_LOCATION`, `./`)
   log.Init()
