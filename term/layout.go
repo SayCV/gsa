@@ -54,8 +54,8 @@ func NewLayout() *Layout {
 		{11, `Volume`, `Volume`, nil},
 		{11, `AvgPrice`, `AvgPrice`, nil},
 		{9, `PeRatio`, `P/E`, blank},
-		{9, `Dividend`, `Dividend`, zero},
-		{9, `DividendYield`, `Yield`, percent},
+		{9, `Dividend`, `Dividend`, nil},
+		{9, `DividendYield`, `Yield`, nil},
 		{11, `Amount`, `Amount`, currency},
 	}
 	layout.regex = regexp.MustCompile(`(\.\d+)[BMK]?$`)
@@ -191,7 +191,7 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
 			//log.Debug("valueGet is ", valueGet)
   		if column.formatter != nil {
   		  // ex. value = currency(valueGet)
-  			// valueGet = column.formatter(valueGet)
+  			valueGet = column.formatter(valueGet)
   		}
     	// ex. pretty[i].Change = layout.pad(valueGet, 10)
 
@@ -292,7 +292,7 @@ func buildQuotesTemplate() *template.Template {
 func highlight(collections ...map[string]string) {
 	for _, collection := range collections {
 		if collection[`change`][0:1] != `-` {
-			collection[`change`] = `<green>` + collection[`change`] + `</>`
+			collection[`change`] = `<red>` + collection[`change`] + `</>`
 		}
 	}
 }
