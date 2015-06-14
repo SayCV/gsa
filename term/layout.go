@@ -42,7 +42,6 @@ func NewLayout() *Layout {
 	layout := &Layout{}
 	layout.columns = []Column{
 		{-7, `Code`, `Ticker`, nil},
-		{10, `Name`, `Name`, nil},
 		{10, `LastPrice`, `Last`, currency},
 		{10, `ChangePrice`, `Change`, currency},
 		{10, `ChangePricePct`, `Change%`, last},
@@ -54,9 +53,10 @@ func NewLayout() *Layout {
 		{11, `Volume`, `Volume`, nil},
 		{11, `AvgPrice`, `AvgPrice`, nil},
 		{9, `PeRatio`, `P/E`, blank},
-		{9, `Dividend`, `Dividend`, nil},
-		{9, `DividendYield`, `Yield`, nil},
+		//{9, `Dividend`, `Dividend`, nil},
+		//{9, `DividendYield`, `Yield`, nil},
 		{11, `Amount`, `Amount`, currency},
+		{10, `Name`, `Name`, nil},
 	}
 	layout.regex = regexp.MustCompile(`(\.\d+)[BMK]?$`)
 	layout.marketTemplate = buildMarketTemplate()
@@ -191,7 +191,7 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
 			//log.Debug("valueGet is ", valueGet)
   		if column.formatter != nil {
   		  // ex. value = currency(valueGet)
-  			valueGet = column.formatter(valueGet)
+  			//valueGet = column.formatter(valueGet)
   		}
     	// ex. pretty[i].Change = layout.pad(valueGet, 10)
 
@@ -282,7 +282,7 @@ func buildQuotesTemplate() *template.Template {
 
 
 {{.Header}}
-{{range.Stocks}}{{if .Advancing}}<red>{{else}}<white>{{end}}{{.Code}}{{.Name}}{{.LastPrice}}{{.ChangePrice}}{{.ChangePricePct}}{{.OpenPrice}}{{.LowPrice}}{{.HighPrice}}{{/*.Low52*/}}{{/*.High52*/}}{{.Volume}}{{.AvgPrice}}{{.PeRatio}}{{.Dividend}}{{.DividendYield}}{{.Amount}}</>
+{{range.Stocks}}{{if .Advancing}}<red>{{else}}<white>{{end}}{{.Code}}{{.LastPrice}}{{.ChangePrice}}{{.ChangePricePct}}{{.OpenPrice}}{{.LowPrice}}{{.HighPrice}}{{/*.Low52*/}}{{/*.High52*/}}{{.Volume}}{{.AvgPrice}}{{.PeRatio}}{{.Amount}}{{.Name}}</>
 {{end}}`
 
 	return template.Must(template.New(`quotes`).Parse(markup))
