@@ -53,7 +53,7 @@ func NewProfile() *Profile {
 		  ZhcnDrogueCodes[`ZGYH`],
 		  ZhcnDrogueCodes[`ZGSY`],
 		  ZhcnDrogueCodes[`ZGSH`],
-		  ZhcnDrogueCodes[`SZWK`],
+		  //ZhcnDrogueCodes[`SZWK`],
 		}
 		//log.Debug("Init profile.Tickers len is ", len(profile.Tickers))
 		profile.SortColumn = 0   // Stock quotes are sorted by ticker name.
