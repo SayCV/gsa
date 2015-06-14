@@ -26,6 +26,7 @@ NO WARRANTIES OF ANY KIND WHATSOEVER. SEE THE LICENSE FILE FOR DETAILS.
    p       Pause market data and stock updates.
    q       Quit mop.
   esc      Ditto.
+   b       BigBill.
 
 Enter comma-delimited list of stock tickers when prompted.
 
@@ -78,6 +79,9 @@ loop:
 					} else if event.Ch == '?' || event.Ch == 'h' || event.Ch == 'H' {
 						showingHelp = true
 						screen.Clear().Draw(help)
+					} else if event.Ch == 'b' || event.Ch == 'B' {
+						showingHelp = true
+						screen.Clear().Draw(`Coming soon`)
 					}
 				} else if lineEditor != nil {
 					if done := lineEditor.Handle(event); done {
