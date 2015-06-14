@@ -42,6 +42,7 @@ func NewLayout() *Layout {
 	layout := &Layout{}
 	layout.columns = []Column{
 		{-7, `Code`, `Ticker`, nil},
+		{10, `Name`, `Name`, nil},
 		{10, `LastPrice`, `Last`, currency},
 		{10, `ChangePrice`, `Change`, currency},
 		{10, `ChangePricePct`, `Change%`, last},
@@ -152,16 +153,16 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
 			
 			psGet := reflect.ValueOf(&stock) // pointer to struct - addressable
       sGet := psGet.Elem() // struct
-      log.Debug("sGet is ", sGet)
+      //log.Debug("sGet is ", sGet)
       if sGet.Kind() != reflect.Struct {
-        log.Debug(`sGet is Invalid`)
+        //log.Debug(`sGet is Invalid`)
         return nil
       }
       // exported field
       fGet := sGet.FieldByName(column.name)
-      log.Debug(`fGet is `, fGet)
+      //log.Debug(`fGet is `, fGet)
       if !fGet.IsValid() {
-        log.Debug(`fGet is Invalid`)
+        //log.Debug(`fGet is Invalid`)
         return nil
       }
         // A Value can be changed only if it is 
@@ -187,7 +188,7 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
         valueGet = fGet.String()
       // etc...
       }
-			log.Debug("valueGet is ", valueGet)
+			//log.Debug("valueGet is ", valueGet)
   		if column.formatter != nil {
   		  // ex. value = currency(valueGet)
   			// valueGet = column.formatter(valueGet)
@@ -197,37 +198,37 @@ func (layout *Layout) prettify(quotes *portfolio.Quotes) []portfolio.Stock {
     	//reflect.ValueOf(&pretty[i]).Elem().FieldByName(column.name).SetString(layout.pad(valueGet, column.width))
     	psSet := reflect.ValueOf(&pretty[i]) // pointer to struct - addressable
       sSet := psSet.Elem() // struct
-      log.Debug(`sSet is `, sSet)
+      //log.Debug(`sSet is `, sSet)
       if sSet.Kind() != reflect.Struct {
          log.Debug(`sSet is Invalid`)
          return nil
       }
       fSet := sSet.FieldByName(column.name)
-      log.Debug(`fSet is `, fSet)
+      //log.Debug(`fSet is `, fSet)
       if !fSet.IsValid() {
-        log.Debug(`fSet is Invalid`)
+        //log.Debug(`fSet is Invalid`)
         return nil
       }
     	
     	if !fSet.CanSet() {
-    	  log.Debug(`fSet not CanSet`)
+    	  //log.Debug(`fSet not CanSet`)
         return nil
     	}
     	// fSet.SetString(layout.pad(valueGet, column.width))
     	valueGet = layout.pad(valueGet, column.width)
-    	log.Debug("valueGet by pad is ", valueGet)
+    	//log.Debug("valueGet by pad is ", valueGet)
     	switch fSet.Kind() {
       case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
         valueSet, _ := strconv.ParseInt(valueGet, 10, 64)
-        log.Debug(`valueSet [int] is `, valueSet)
+        //log.Debug(`valueSet [int] is `, valueSet)
         fSet.SetInt(valueSet)
       case reflect.Float32, reflect.Float64:
         valueSet, _ := strconv.ParseFloat(valueGet, 32)
-        log.Debug(`valueSet [float] is `, valueSet)
+        //log.Debug(`valueSet [float] is `, valueSet)
         fSet.SetFloat(valueSet)
-        log.Debug(`fSet [final] is `, strconv.FormatFloat(fSet.Float(), 'f', 2, 32))
+        //log.Debug(`fSet [final] is `, strconv.FormatFloat(fSet.Float(), 'f', 2, 32))
       case reflect.String:
-        log.Debug(`valueSet [string] is `, valueGet)
+        //log.Debug(`valueSet [string] is `, valueGet)
         fSet.SetString(valueGet)
       // etc...
       }
@@ -281,7 +282,7 @@ func buildQuotesTemplate() *template.Template {
 
 
 {{.Header}}
-{{range.Stocks}}{{if .Advancing}}<red>{{end}}{{.Code}}{{.LastPrice}}{{.ChangePrice}}{{.ChangePricePct}}{{.OpenPrice}}{{.LowPrice}}{{.HighPrice}}{{/*.Low52*/}}{{/*.High52*/}}{{.Volume}}{{.AvgPrice}}{{.PeRatio}}{{.Dividend}}{{.DividendYield}}{{.Amount}}</>
+{{range.Stocks}}{{if .Advancing}}<red>{{end}}{{.Code}}{{.Name}}{{.LastPrice}}{{.ChangePrice}}{{.ChangePricePct}}{{.OpenPrice}}{{.LowPrice}}{{.HighPrice}}{{/*.Low52*/}}{{/*.High52*/}}{{.Volume}}{{.AvgPrice}}{{.PeRatio}}{{.Dividend}}{{.DividendYield}}{{.Amount}}</>
 {{end}}`
 
 	return template.Must(template.New(`quotes`).Parse(markup))

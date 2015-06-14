@@ -9,6 +9,14 @@ import (
 	`strings`
 )
 
+func RuneToAscii(r rune) string {
+    if r < 128 {
+        return string(r)
+    } else {
+        return "\\u" + strconv.FormatInt(int64(r), 16)
+    }
+}
+
 // The same exact method is used to sort by $Change and Change%. In both cases
 // we sort by the value of Change% so that multiple $0.00s get sorted proferly.
 func ChangeToFloat32(str string) float32 {

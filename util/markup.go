@@ -8,6 +8,7 @@ import (
 	`github.com/michaeldv/termbox-go`
 	`regexp`
 	`strings`
+	`github.com/SayCV/gsa/log`
 )
 
 // Markup implements some minimalistic text formatting conventions that
@@ -89,7 +90,7 @@ func (markup *Markup) Tokenize(str string) []string {
 	if head != len(str) && tail != len(str) {
 		strings = append(strings, str[head:])
 	}
-
+  log.Debug("Tokenize: ", strings)
 	return strings
 }
 

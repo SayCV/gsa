@@ -11,6 +11,7 @@ import (
 	`github.com/SayCV/gsa/log`
 	`github.com/SayCV/gsa/portfolio`
 	`github.com/SayCV/gsa/term`
+	//`github.com/SayCV/gsa/util`
 )
 
 const help = `gsa v0.1.0 -- Copyright (c) 2015 by QDevor. All Rights Reserved.
@@ -120,7 +121,7 @@ loop:
 //-----------------------------------------------------------------------------
 func main() {
   
-  os.Setenv(`LOG_LEVEL`, `3`)
+  //os.Setenv(`LOG_LEVEL`, `3`)
   os.Setenv(`LOG_TO_STDERR`, `true`)
   os.Setenv(`LOG_FILE_LOCATION`, `./`)
   log.Init()
@@ -132,12 +133,15 @@ func main() {
   } else {  
     log.Debug("Current Dir: ", p)  
   }
-
+  
+  //util.Auxtest()
+  //return
+  
 	screen := term.NewScreen()
 	defer screen.Close()
 
 	profile := portfolio.NewProfile()
 	mainLoop(screen, profile)
 	
-	log.Close()
+	log.Flush()
 }

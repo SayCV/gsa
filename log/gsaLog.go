@@ -38,7 +38,7 @@ func Init() {
 	}
 }
 
-func Close() {
+func Flush() {
 	glog.Flush()
 }
 

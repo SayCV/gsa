@@ -1,13 +1,16 @@
-// Copyright (c) 2013-2015 by Michael Dvorkin. All Rights Reserved.
+﻿// Copyright (c) 2013-2015 by Michael Dvorkin. All Rights Reserved.
 // Use of this source code is governed by a MIT-style license that can
 // be found in the LICENSE file.
 
 package term
 
 import (
+	//`fmt`
 	`github.com/michaeldv/termbox-go`
+	//`unicode/utf8`
 	`strings`
 	`time`
+	//`github.com/SayCV/gsa/log`
 	`github.com/SayCV/gsa/util`
 	`github.com/SayCV/gsa/portfolio`
 )
@@ -117,12 +120,22 @@ func (screen *Screen) DrawLine(x int, y int, str string) {
 
 	for _, token := range screen.markup.Tokenize(str) {
 		// First check if it's a tag. Tags are eaten up and not displayed.
+		// log.Debug("Checked Tag: ", token)
 		if screen.markup.IsTag(token) {
+		  //log.Debug("Checked IsTag: ", token)
 			continue
 		}
-
+    //log.Debug("Checked NotTag: ", token)
 		// Here comes the actual text: display it one character at a time.
+		//r := []rune(token)
+		//s := []byte(token)
+		//i := 0
+		//r, totalsize := utf8.DecodeRuneInString(token)
+		//for i:=0; i<len(r); i++ {
 		for i, char := range token {
+		  //char, size := utf8.DecodeRune(s)
+		  //s = s[size:]
+		  //log.Debug("draw char: - ", char)
 			if !screen.markup.RightAligned {
 				start = x + column
 				column++
