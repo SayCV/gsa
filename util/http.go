@@ -7,7 +7,7 @@ package util
 import (
   `io/ioutil`
 	`net/http`
-	`strings`
+	//`strings`
 )
 
 func ResponseToString(response *http.Response) (string, error) {
