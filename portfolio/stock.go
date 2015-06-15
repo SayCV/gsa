@@ -13,14 +13,14 @@ import (
 
 const MAX_DEALING_BLOCK = 5
 
-type DealingQuote struct {
+type DealingBillQuote struct {
   Price             string
 	Quantity					string
 }
 
-type Dealing struct {
-  Buy             *DealingQuote
-	Sell            *DealingQuote
+type DealingBill struct {
+  Buy             *DealingBillQuote
+	Sell            *DealingBillQuote
 }
 
 type Stock struct {
@@ -46,7 +46,7 @@ type Stock struct {
 	TurnoverRatio		string
 	VolumeRatio			string
 	
-	Dealing   [MAX_DEALING_BLOCK]Dealing
+	Dealing   [MAX_DEALING_BLOCK]DealingBill
 	
 	// milliseconds
 	Timestamp				string
