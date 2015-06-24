@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license that can
 // be found in the LICENSE file.
 
-package portfolio
+package ref
 
 var DP_URL = `%sapp.finance.%s/data/stock/%s?day=&page=%s`
 var DP_163_URL = `%squotes.%s/data/caibao/%s?reportdate=%s&sort=declaredate&order=desc&page=%s`

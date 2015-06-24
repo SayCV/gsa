@@ -10,6 +10,7 @@ import (
 	`github.com/michaeldv/termbox-go`
 	`github.com/SayCV/gsa/log`
 	`github.com/SayCV/gsa/portfolio`
+	`github.com/SayCV/gsa/portfolio/ref`
 	`github.com/SayCV/gsa/term`
 	//`github.com/SayCV/gsa/util`
 )

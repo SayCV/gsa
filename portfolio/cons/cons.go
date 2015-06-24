@@ -2,10 +2,12 @@
 // Use of this source code is governed by a MIT-style license that can
 // be found in the LICENSE file.
 
-package portfolio
+package cons
 
 import (
 	`fmt`
+	stdLog `log`
+	`github.com/SayCV/gsa/log`
 )
 
 // var VERSION = `0.1.0`
@@ -113,3 +115,48 @@ var DATE_CHK_MSG = `年度输入错误：请输入1989年以后的年份数字�
 var DATE_CHK_Q_MSG = `季度输入错误：请输入1、2、3或4数字`
 var TOP_PARAS_MSG = `top有误，请输入整数或all.`
 var LHB_MSG = `周期输入有误，请输入数字5、10、30或60`
+
+func WriteHead() {
+  stdLog.Println(DATA_GETTING_TIPS)
+  //stdLog.Flush()
+}
+
+func WriteConsole() {
+  stdLog.Println(DATA_GETTING_FLAG)
+  //stdLog.Flush()
+}
+    
+func WriteTips(tip string) {
+  stdLog.Println(fmt.Sprintf(DATA_ROWS_TIPS, tip))
+  //stdLog.Flush()
+}
+
+func WriteMsg(msg string) {
+  stdLog.Println(msg)
+  //stdLog.Flush()
+}
+    
+func CheckInput(year int, quarter int) bool {
+  ret := true
+  if year < 1989 {
+    log.Error(DATE_CHK_MSG)
+    ret = false
+  } else if quarter != 1 && quarter != 2 && quarter != 3 && quarter != 4 {
+    log.Error(DATE_CHK_Q_MSG)
+    ret = false
+  } else {
+    ret = true
+  }
+  return ret
+}
+    
+func CheckLhbInput(last int) bool {
+  ret := true
+  if last != 5 && last != 10 && last != 30 && last != 60 {
+    log.Error(LHB_MSG)
+    ret = false
+  } else {
+    ret = true
+  }
+  return ret
+}
