@@ -10,9 +10,9 @@ import (
 	`github.com/michaeldv/termbox-go`
 	`github.com/SayCV/gsa/log`
 	`github.com/SayCV/gsa/portfolio`
-	`github.com/SayCV/gsa/portfolio/ref`
+	//`github.com/SayCV/gsa/portfolio/ref`
 	`github.com/SayCV/gsa/term`
-	//`github.com/SayCV/gsa/util`
+	`github.com/SayCV/gsa/test`
 )
 
 const help = `gsa v0.1.0 -- Copyright (c) 2015 by QDevor. All Rights Reserved.
@@ -139,8 +139,8 @@ func main() {
     log.Debug("Current Dir: ", p)  
   }
   
-  //util.Auxtest()
-  //return
+  test.Auxtest()
+  return
   
 	screen := term.NewScreen()
 	defer screen.Close()

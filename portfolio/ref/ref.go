@@ -7,14 +7,22 @@
 package ref
 
 import (
-	//`fmt`
-	//`strconv`
+	`fmt`
+	`time`
+	`strconv`
+	`io/ioutil`
+	`net/http`
 	`regexp`
-	//`strings`
+	`strings`
 	//stdLog `log`
+	
 	`github.com/SayCV/gsa/log`
-	//`github.com/pandastream/go-panda`
+	//`github.com/SayCV/gsa/util`
 	`github.com/SayCV/gsa/portfolio/cons`
+	
+  //`golang.org/x/net/html`
+  //`gopkg.in/xmlpath.v2`
+  `github.com/beevik/etree`
 )
 
 func _fun_divi(x string) string {
@@ -46,9 +54,9 @@ func _fun_into(x string) string {
   return res
 }
 
-func _dist_cotent(year int, pageNo int, retry_count int, pause float32) {
+func _dist_cotent(year int, pageNo int, retry_count int, pause int) {
   for i:=0; i<retry_count; i++ {
-    time.Sleep(time.Second * pause)
+    time.Sleep(time.Second * 1)
     defer func() {
   		if err := recover(); err != nil {
   			log.Error(cons.NETWORK_URL_ERROR_MSG, err)
@@ -57,10 +65,36 @@ func _dist_cotent(year int, pageNo int, retry_count int, pause float32) {
   	if pageNo > 0 {
   	  cons.WriteConsole()
   	}
-
+  	// fetch and read a web page
+  	// http://quotes.money.163.com/data/caibao/fpyg.html?sort=declaredate&order=desc&reportdate=2014&sor
+  	// http://quotes.money.163.com/data/caibao/fpyg.html?reportdate=2015&sort=declaredate&order=desc&page=0
+  	// http://quotes.money.163.com/data/caibao/fpyg.html?reportdate=2015&sort=declaredate&order=desc&page=0
+  	s := fmt.Sprintf(DP_163_URL, cons.P_TYPE[`http`], cons.DOMAINS[`163`],
+                     cons.PAGES[`163dp`], strconv.Itoa(year), strconv.Itoa(pageNo))
+  	log.Debug(s)
+    resp, _ := http.Get(s)
+    page, _ := ioutil.ReadAll(resp.Body)
+    log.Debug(string(page))
+    //log.Debug(util.GbkDecode(string(page)))
+    //doc, err := html.Parse(strings.NewReader(string(page)))
+    doc := etree.NewDocument()
+    _, err := doc.ReadFrom(strings.NewReader(string(page)))
+    //path := xmlpath.MustCompile(`//div[@class=\"fn_rp_list\"]/table`)
+    //root, err := xmlpath.Parse(page)
+  	if err != nil {
+  		log.Emergency(err)
+  	}
+  	path := etree.MustCompilePath(`//div[@class=\"fn_rp_list\"]/table`)
+  	//if value, ok := path.String(root); ok {
+  	for _, value := range doc.FindElementsPath(path) {
+        fmt.Println("Found:", value.Text())
+    }
+    //sarr := etree.NewDocument()
+}
+}
 /*
-            html = lxml.html.parse(rv.DP_163_URL%(ct.P_TYPE['http'], ct.DOMAINS['163'],
-                     ct.PAGES['163dp'], year, pageNo))  
+            html = lxml.html.parse(fmt.Sprintf(DP_163_URL, cons.P_TYPE['http'], cons.DOMAINS['163'],
+                     cons.PAGES['163dp'], strconv.Itoa(year), strconv.Itoa(pageNo)))  
             res = html.xpath('//div[@class=\"fn_rp_list\"]/table')
             if ct.PY3:
                 sarr = [etree.tostring(node).decode('utf-8') for node in res]
@@ -139,3 +173,7 @@ func profit_data(year int, top int, retry_count int, pause float32) pandas {
   return 1
 }
 */
+
+func Test() {
+  _dist_cotent(2015, 0, 2, 0)
+}
