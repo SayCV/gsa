@@ -7,6 +7,7 @@
 package ref
 
 import (
+  `os`
 	`fmt`
 	`time`
 	`strconv`
@@ -59,7 +60,7 @@ func _dist_cotent(year int, pageNo int, retry_count int, pause int) {
     time.Sleep(time.Second * 1)
     defer func() {
   		if err := recover(); err != nil {
-  			log.Error(cons.NETWORK_URL_ERROR_MSG, err)
+  			log.Error(cons.NETWORK_URL_ERROR_MSG, ` - `, err)
   		}
   	}()
   	if pageNo > 0 {
@@ -74,21 +75,42 @@ func _dist_cotent(year int, pageNo int, retry_count int, pause int) {
   	log.Debug(s)
     resp, _ := http.Get(s)
     page, _ := ioutil.ReadAll(resp.Body)
-    log.Debug(string(page))
+    // avoid line 14 - no semicolon
+    re := regexp.MustCompile("(?m)[\r\n]+^.*ntes_sitenav_link.*$")
+    res := re.ReplaceAllString(string(page), "")
+    re = regexp.MustCompile("(?m)[\r\n]+^.*noscript.*$")
+    res = re.ReplaceAllString(res, "")
+    ri := strings.NewReader(res)
+    
+    //log.Debug(ri)
     //log.Debug(util.GbkDecode(string(page)))
-    //doc, err := html.Parse(strings.NewReader(string(page)))
-    doc := etree.NewDocument()
-    _, err := doc.ReadFrom(strings.NewReader(string(page)))
-    //path := xmlpath.MustCompile(`//div[@class=\"fn_rp_list\"]/table`)
+    //doc, err := html.Parse(ri)
+    doc_fn_rp_list := etree.NewDocument()
+    _, err := doc_fn_rp_list.ReadFrom(ri)
+    //path := xmlpath.MustCompile(`//div[@class='fn_rp_list']/table`)
     //root, err := xmlpath.Parse(page)
+    
   	if err != nil {
   		log.Emergency(err)
   	}
-  	path := etree.MustCompilePath(`//div[@class=\"fn_rp_list\"]/table`)
+  	path_fn_rp_list := etree.MustCompilePath("//div[@class='fn_rp_list']")
   	//if value, ok := path.String(root); ok {
-  	for _, value := range doc.FindElementsPath(path) {
-        fmt.Println("Found:", value.Text())
-    }
+  	element_fn_rp_list := doc_fn_rp_list.FindElementPath(path_fn_rp_list)
+  	//log.Info("Found:", element_fn_rp_list)
+  	doc_table := etree.CreateDocument(element_fn_rp_list)
+    //_, err := doc_table.ReadFromString()
+  	path_table := etree.MustCompilePath("//table[@class='fn_cm_table']")
+  	element_table := doc_table.FindElementPath(path_table)
+  	list := etree.CreateDocument(element_table)
+  	list.Indent(2)
+  	list.WriteTo(os.Stdout)
+		/*elements_table := doc_table.FindElementsPath(path_table)
+  	for _, e := range elements_table {
+      //log.Info("Found:", e.Text())
+      list := etree.CreateDocument(e)
+      list.Indent(2)
+		  list.WriteTo(os.Stdout)
+    }*/
     //sarr := etree.NewDocument()
 }
 }
